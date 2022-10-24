@@ -1,0 +1,226 @@
+# -*- coding: utf-8 -*-
+import app_base
+from matplotlib import pyplot as plt, animation as an
+import numpy as np
+import matplotlib.patches as patches
+import sys
+
+###############################################################################
+# Common
+###############################################################################
+class Parameters(app_base.Parameters):
+    def __init__(self, parser):
+        super().__init__(parser)
+
+    def add_hyper_parameters(self, parser):
+        # Hyper parametes for reserver computing 
+        parser.add_argument('-node', dest='node', default=800, type=int, help='number of node')
+        parser.add_argument('-density', dest='density', default=0.2, type=float, help='density')
+        parser.add_argument('-input_scale', dest='input_scale', default=0.004, type=float, help='input scale')
+        parser.add_argument('-rho', dest='rho', default=0.999, type=float, help='rho')
+        parser.add_argument('-fb_scale', dest='fb_scale', default=None, type=float, help='fb scale')
+        parser.add_argument('-leaking_rate', dest='leaking_rate', default=0.1, type=float, help='leaking rate')
+        parser.add_argument('-average_window', dest='average_window', default=1, type=int, help='average window size')
+        parser.add_argument('--no_classification', dest='no_class', action='store_false', help='no class')
+
+
+    def add_custome_perametes(self, parser):
+        parser.add_argument('-num_of_input_data', dest='num_of_input_data', default=1, type=int, help='num of input data (num of sensors)')
+        parser.add_argument('-num_of_output_classes', dest='num_of_output_classes', default=1, type=int, help='num of output claasses')
+
+    def set_parameters(self, params):
+        self.node = params.node
+        self.density = params.density
+        self.input_scale = params.input_scale
+        self.rho = params.rho
+        self.fb_scale = params.fb_scale
+        self.leaking_rate = params.leaking_rate
+        self.average_window = params.average_window
+        self.no_class = params.no_class
+
+        self.num_of_input_data = params.num_of_input_data
+        self.num_of_output_classes = params.num_of_output_classes
+
+
+
+class DataAugmentation(app_base.DataAugmentation):
+    def __init__(self, parameters=[]):
+        self.parameters = parameters
+
+    def get_augmented_data(self, pulse):
+        return pulse
+
+
+###############################################################################
+# Train
+###############################################################################
+class TrainingApp(app_base.TrainingApp):
+    def __init__(self, parametes):
+        super().__init__()
+        self.parametes = parametes
+        pygame.init()
+        self.width = 151
+        self.height = 181
+        self.display = pygame.display.set_mode((self.width, self.height))
+        self.bg_thumb_neutral = pygame.image.load("thumb_neutral.png")
+        self.bg_thumb_up = pygame.image.load("thumb_up.png")
+        self.bg = self.bg_thumb_neutral
+        self.E_THUMB_NEUTRAL = pygame.event.Event(pygame.USEREVENT, attr1='E_THUMB_NEUTRAL')
+        self.E_THUMB_UP      = pygame.event.Event(pygame.USEREVENT, attr1='E_THUMB_UP')
+        pygame.display.set_caption("Reservoir Computing - thumb up detection")
+        self.clock = pygame.time.Clock()
+        #self.data0 = DataAugmentation(self.parametes)
+        self.is_thumb_neutral = True
+
+    def start(self):
+        super().start()
+        loop = True
+        while loop:
+            for event in pygame.event.get():
+                ''' End the game only when the 'quit' button is pressed '''
+                if event.type == pygame.QUIT:
+                    print('close')
+                    close()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_q:
+                        self.close()
+
+                if event == self.E_THUMB_NEUTRAL:
+                    self.bg = self.bg_thumb_neutral
+
+                if event == self.E_THUMB_UP:
+                    self.bg = self.bg_thumb_up
+
+            self.display.blit(self.bg, (0, 0))
+            pygame.display.update()
+            self.clock.tick(60)
+
+            if self.is_exit:
+                print('stopped TrainingApp')
+                return
+
+    def stop(self):
+        super().stop()
+
+    #def close(self):
+    #    pygame.quit()
+    #    #sys.exit()
+    
+
+    def get_data(self, data):
+        pulse00 = data[0]
+        #pulse01 = data[1]
+        #pulse02 = data[2]
+        #pulse03 = data[3]
+        buttons = data[4]
+        return pulse00, buttons
+
+    def prepare_data(self, data):
+        pulse00, label = self.get_data(data)
+        pulses = [float(pulse00),]
+        labels = [float(int(label) == 2), ]
+        if int(label) == 2:
+            if self.is_thumb_neutral == True:
+                pygame.event.post(self.E_THUMB_UP)
+                self.is_thumb_neutral = False
+        else:
+            if self.is_thumb_neutral != True:
+                pygame.event.post(self.E_THUMB_NEUTRAL)
+                self.is_thumb_neutral = True
+
+        return pulses, labels
+
+###############################################################################
+# Predict
+###############################################################################
+import pygame
+import time
+
+class PredictApp(app_base.PredictApp):
+    def __init__(self, parametes):
+        super().__init__()
+        self.parametes = parametes
+        pygame.init()
+        self.width = 151
+        self.height = 181
+        self.display = pygame.display.set_mode((self.width, self.height))
+        self.bg_thumb_neutral = pygame.image.load("thumb_neutral.png")
+        self.bg_thumb_up = pygame.image.load("thumb_up.png")
+        self.bg = self.bg_thumb_neutral
+        self.E_THUMB_NEUTRAL = pygame.event.Event(pygame.USEREVENT, attr1='E_THUMB_NEUTRAL')
+        self.E_THUMB_UP      = pygame.event.Event(pygame.USEREVENT, attr1='E_THUMB_UP')
+        pygame.display.set_caption("Reservoir Computing - thumb up detection")
+        self.clock = pygame.time.Clock()
+        #self.data0 = DataAugmentation(self.parametes)
+        self.is_thumb_neutral = True
+        self.moving_avg_win_size = 4
+
+    def start(self):
+        super().start()
+        loop = True
+        while loop:
+            for event in pygame.event.get():
+                ''' End the game only when the 'quit' button is pressed '''
+                if event.type == pygame.QUIT:
+                    close()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_q:
+                        self.close()
+
+                if event == self.E_THUMB_NEUTRAL:
+                    self.bg = self.bg_thumb_neutral
+
+                if event == self.E_THUMB_UP:
+                    self.bg = self.bg_thumb_up
+
+            self.display.blit(self.bg, (0, 0))
+            pygame.display.update()
+            self.clock.tick(60)
+
+            if self.is_exit:
+                print('stopped TrainingApp')
+                return
+
+    def stop(self):
+        super().stop()
+
+    #def close(self):
+    #    pygame.quit()
+    #    sys.exit()
+    
+
+    def get_data(self, data):
+        pulse00 = data[0]
+        #pulse01 = data[1]
+        #pulse02 = data[2]
+        #pulse03 = data[3]
+        buttons = data[4]
+        return pulse00
+
+    def prepare_data(self, data):
+        pulse00 = self.get_data(data)
+        pulses = [float(pulse00),]
+
+        return pulses
+
+    def set_predict_result(self, predicted):
+        super().set_predict_result(predicted)
+        if len(predicted[-self.moving_avg_win_size:-1]) == 0:
+            print('P skip02')
+            return
+
+        avg = np.mean(predicted[-self.moving_avg_win_size:-1][0][0])
+
+        if avg > 0.5:
+            if self.is_thumb_neutral == True:
+                pygame.event.post(self.E_THUMB_UP)
+                self.is_thumb_neutral = False
+        else:
+            if self.is_thumb_neutral != True:
+                pygame.event.post(self.E_THUMB_NEUTRAL)
+                self.is_thumb_neutral = True
+        return
+
+if __name__=="__main__":
+    training_app = TrainingApp()
+
