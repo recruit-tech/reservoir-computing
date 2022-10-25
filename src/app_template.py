@@ -27,6 +27,8 @@ class Parameters(app_base.Parameters):
     def add_custome_perametes(self, parser):
         parser.add_argument('-num_of_input_data', dest='num_of_input_data', default=1, type=int, help='num of input data (num of sensors)')
         parser.add_argument('-num_of_output_classes', dest='num_of_output_classes', default=1, type=int, help='num of output claasses')
+        parser.add_argument('-training_time_in_sec', dest='training_time_in_sec', default=60, type=int, help='Training time in sec')
+
 
     def set_parameters(self, params):
         self.node = params.node
@@ -40,6 +42,7 @@ class Parameters(app_base.Parameters):
 
         self.num_of_input_data = params.num_of_input_data
         self.num_of_output_classes = params.num_of_output_classes
+        self.training_time_in_sec = params.training_time_in_sec
 
 
 

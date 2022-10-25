@@ -25,6 +25,7 @@ class Parameters(app_base.Parameters):
     def add_custome_perametes(self, parser):
         parser.add_argument('-num_of_input_data', dest='num_of_input_data', default=15, type=int, help='num of input data (num of sensors)')
         parser.add_argument('-num_of_output_classes', dest='num_of_output_classes', default=6, type=int, help='num of output claasses')
+        parser.add_argument('-training_time_in_sec', dest='training_time_in_sec', default=60, type=int, help='Training time in sec')
 
         parser.add_argument('-delays0', dest='delays0', default=1, type=int, help='delays type int')
         parser.add_argument('-delays1', dest='delays1', default=3, type=int, help='delays type int')
@@ -58,6 +59,7 @@ class Parameters(app_base.Parameters):
 
         self.num_of_input_data = params.num_of_input_data
         self.num_of_output_classes = params.num_of_output_classes
+        self.training_time_in_sec = params.training_time_in_sec
 
         self.delays0 = params.delays0
         self.shift0 = params.shift0

@@ -135,7 +135,7 @@ def main(ds, app):
     training_app = app.TrainingApp(parametes)
     optimizer = Tikhonov(parametes.node, parametes.num_of_output_classes, 0.1)
 
-    Training(ds, model, training_app, optimizer, out_csv_filename, out_model_filename, measurement_time = 10)
+    Training(ds, model, training_app, optimizer, out_csv_filename, out_model_filename, measurement_time = parametes.training_time_in_sec)
     print('Training done')
     predict_app = app.PredictApp(parametes)
     Predict(ds, model, predict_app)
