@@ -6,25 +6,35 @@ import serial
 
 class DataStreamer(data_streamer_base.DataStreamerBase):
     def __init__(self, port):
-        self.serial = serial.Serial(port,115200,timeout=100)
-        self.wait_until_first_data()
         self.is_exit = False
+        self.port = port
         super().__init__()
 
     def run(self):
+        print('run')
+        self.serial = serial.Serial(self.port,115200,timeout=100)
+        self.wait_until_first_data()
+
         while True:
             res = self.serial.readline()
             self.data = res.decode().replace( '\r\n' , '' ).split(',')
             if self.callback is not None:
                 self.callback(self.data)
+
+            #print('self.is_exit',self.is_exit)
             if self.is_exit:
-                #self.serial.close()
-                #print('stopped DataStreamer4Com')
-                continue
+                self.serial.close()
+                print('stopped DataStreamer')
+                return
 
     def set_callback(self, callback):
         super().set_callback(callback)
         self.is_exit = False
+
+
+    #def end(self):
+    #    #self.serial.close()
+    #    super().end()
 
     #def stop(self):
     #    self.is_exit = True

@@ -372,6 +372,10 @@ class TrainingApp(app_base.TrainingApp):
     def get_label(self):
         return self.label
 
+    def is_alive(self):
+        return super().is_alive()
+
+
 ###############################################################################
 # Predict
 ###############################################################################
@@ -431,6 +435,9 @@ class PredictApp(app_base.PredictApp):
         self.game.setPredicts([up, down, left, right, B, A])
 
         return
+
+    def is_alive(self):
+        return super().is_alive()
 
 if __name__=="__main__":
     training_app = TrainingApp()

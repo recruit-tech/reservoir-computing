@@ -43,6 +43,9 @@ class TrainingApp(metaclass=ABCMeta):
     def prepare_data(self, data):
         pass
 
+    @abstractmethod
+    def is_alive(self):
+        return self.is_exit != True
 
 class PredictApp(metaclass=ABCMeta):
     def __init__(self):
@@ -65,6 +68,10 @@ class PredictApp(metaclass=ABCMeta):
     def set_predict_result(self, predicted):
         self.predicted = predicted
         pass
+
+    @abstractmethod
+    def is_alive(self):
+        return self.is_exit != True
 
 class DataAugmentation(metaclass=ABCMeta):
     def __init__(self, parameters=[]):

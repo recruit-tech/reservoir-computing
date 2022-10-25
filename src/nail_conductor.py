@@ -56,12 +56,12 @@ class Training():
         self.model.init_train_online()
 
         self.start_time = time.time()
-        self.data_streamer.begin()
         self.app.start()
+        self.data_streamer.begin()
 
     def train(self, data):
         now_time = time.time()
-        if now_time - self.start_time >= self.measurement_time:
+        if now_time - self.start_time >= self.measurement_time or self.app.is_alive() == False:
             self.data_streamer.end()
             self.app.stop()
             csv_writer(self.out_csv_filename, self.save_data)
@@ -87,12 +87,12 @@ class Predict():
         self.model.init_predict_online()
 
         self.start_time = time.time()
-        self.data_streamer.begin()
         self.app.start()
+        self.data_streamer.begin()
 
     def predict(self, data):
         now_time = time.time()
-        if now_time - self.start_time >= self.measurement_time and self.measurement_time != 0:
+        if (now_time - self.start_time >= self.measurement_time and self.measurement_time != 0) or self.app.is_alive() == False:
             self.data_streamer.end()
             self.app.stop()
             return
@@ -135,7 +135,6 @@ def main(ds, app):
         Training(ds, model, training_app, optimizer, out_csv_filename, out_model_filename, measurement_time = parametes.training_time_in_sec)
         print('Training done')
 
-
     else:
 
         # Load a model file
@@ -144,7 +143,6 @@ def main(ds, app):
 
     predict_app = app.PredictApp(parametes)
     Predict(ds, model, predict_app)
-    predict_app.start()
 
 
 
@@ -174,4 +172,10 @@ if __name__=="__main__":
     #app = app_famicom
     app = app_thumbup
 
-    main(ds, app)
+    try:
+        main(ds, app)
+    except KeyboardInterrupt:
+        ds.kill()
+        print('closeing...')
+    exit()
+

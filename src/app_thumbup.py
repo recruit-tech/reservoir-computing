@@ -85,11 +85,16 @@ class TrainingApp(app_base.TrainingApp):
             for event in pygame.event.get():
                 ''' End the game only when the 'quit' button is pressed '''
                 if event.type == pygame.QUIT:
-                    print('close')
-                    close()
+                    print('stopped TrainingApp')
+                    pygame.quit()
+                    self.is_exit = True
+                    return
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_q:
-                        self.close()
+                        print('stopped TrainingApp')
+                        pygame.quit()
+                        self.is_exit = True
+                        return
 
                 if event == self.E_THUMB_NEUTRAL:
                     self.bg = self.bg_thumb_neutral
@@ -105,10 +110,12 @@ class TrainingApp(app_base.TrainingApp):
 
             if self.is_exit:
                 print('stopped TrainingApp')
+                pygame.quit()
                 return
 
     def stop(self):
         super().stop()
+        
 
     #def close(self):
     #    pygame.quit()
@@ -137,6 +144,10 @@ class TrainingApp(app_base.TrainingApp):
                 self.is_thumb_neutral = True
 
         return pulses, labels
+
+    def is_alive(self):
+        return super().is_alive()
+
 
 ###############################################################################
 # Predict
@@ -175,10 +186,16 @@ class PredictApp(app_base.PredictApp):
             for event in pygame.event.get():
                 ''' End the game only when the 'quit' button is pressed '''
                 if event.type == pygame.QUIT:
-                    close()
+                    print('stopped PredictApp')
+                    pygame.quit()
+                    self.is_exit = True
+                    return
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_q:
-                        self.close()
+                        print('stopped PredictApp')
+                        pygame.quit()
+                        self.is_exit = True
+                        return
 
                 if event == self.E_THUMB_NEUTRAL:
                     self.bg = self.bg_thumb_neutral
@@ -192,7 +209,8 @@ class PredictApp(app_base.PredictApp):
             self.clock.tick(60)
 
             if self.is_exit:
-                print('stopped TrainingApp')
+                print('stopped PredictApp')
+                pygame.quit()
                 return
 
     def stop(self):
@@ -234,6 +252,10 @@ class PredictApp(app_base.PredictApp):
                 pygame.event.post(self.E_THUMB_NEUTRAL)
                 self.is_thumb_neutral = True
         return
+
+    def is_alive(self):
+        return super().is_alive()
+
 
 if __name__=="__main__":
     training_app = TrainingApp()

@@ -15,14 +15,16 @@ class DataStreamerBase(threading.Thread, metaclass=ABCMeta):
         self.kill()
 
     def begin(self):
+        self.is_exit = False
         self.started.set()
 
     def end(self):
+        self.is_exit = True
         self.started.clear()
 
     def kill(self):
-        self.started.set()
         self.is_exit = True
+        self.started.set()
         self.join()
 
     @abstractmethod
