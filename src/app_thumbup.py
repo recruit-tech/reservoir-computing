@@ -58,8 +58,14 @@ class TrainingApp(app_base.TrainingApp):
         self.parametes = parametes
         pygame.init()
         self.width = 151
-        self.height = 181
+        self.height = 181 + 50
         self.display = pygame.display.set_mode((self.width, self.height))
+        self.font = pygame.font.SysFont("Arial", 35)
+
+        white = (230, 230, 230)
+        self.title = self.font.render('Training', True, white)
+        self.title_rect = self.title.get_rect(topright = (110, 185))
+
         self.bg_thumb_neutral = pygame.image.load("thumb_neutral.png")
         self.bg_thumb_up = pygame.image.load("thumb_up.png")
         self.bg = self.bg_thumb_neutral
@@ -90,6 +96,8 @@ class TrainingApp(app_base.TrainingApp):
                     self.bg = self.bg_thumb_up
 
             self.display.blit(self.bg, (0, 0))
+            self.display.blit(self.title, self.title_rect)
+
             pygame.display.update()
             self.clock.tick(60)
 
@@ -140,8 +148,13 @@ class PredictApp(app_base.PredictApp):
         self.parametes = parametes
         pygame.init()
         self.width = 151
-        self.height = 181
+        self.height = 181 + 50
         self.display = pygame.display.set_mode((self.width, self.height))
+
+        self.font = pygame.font.SysFont("Arial", 35)
+        white = (230, 230, 230)
+        self.title = self.font.render('Predict', True, white)
+        self.title_rect = self.title.get_rect(topright = (110, 185))
         self.bg_thumb_neutral = pygame.image.load("thumb_neutral.png")
         self.bg_thumb_up = pygame.image.load("thumb_up.png")
         self.bg = self.bg_thumb_neutral
@@ -172,6 +185,7 @@ class PredictApp(app_base.PredictApp):
                     self.bg = self.bg_thumb_up
 
             self.display.blit(self.bg, (0, 0))
+            self.display.blit(self.title, self.title_rect)
             pygame.display.update()
             self.clock.tick(60)
 
