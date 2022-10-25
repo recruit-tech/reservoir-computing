@@ -4,8 +4,8 @@ import data_streamer_base
 
 class DataStreamer(data_streamer_base.DataStreamerBase):
     def __init__(self, port=None):
-        super().__init__()
         self.is_exit = False
+        super().__init__()
 
     def run(self):
         while True:
@@ -17,9 +17,6 @@ class DataStreamer(data_streamer_base.DataStreamerBase):
     def set_callback(self, callback):
         super().set_callback(callback)
         self.is_exit = False
-
-    def stop(self):
-        self.is_exit = True
 
 
 def callback(arg):

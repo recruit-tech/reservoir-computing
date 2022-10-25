@@ -5,8 +5,25 @@ import threading
 class DataStreamerBase(threading.Thread, metaclass=ABCMeta):
     def __init__(self):
         threading.Thread.__init__(self)
+        self.started = threading.Event()
+
         self.callback = None
         self.is_exit = False
+        self.start()
+
+    def __del__(self):
+        self.kill()
+
+    def begin(self):
+        self.started.set()
+
+    def end(self):
+        self.started.clear()
+
+    def kill(self):
+        self.started.set()
+        self.is_exit = True
+        self.join()
 
     @abstractmethod
     def set_callback(self, callback):
@@ -14,10 +31,10 @@ class DataStreamerBase(threading.Thread, metaclass=ABCMeta):
 
     @abstractmethod
     def run(self):
-        self.start()
         pass
 
-    @abstractmethod
-    def stop(self):
-        self.is_exit = True
-        pass
+    #@abstractmethod
+    #def stop(self):
+    #    self.is_exit = True
+    #    pass
+

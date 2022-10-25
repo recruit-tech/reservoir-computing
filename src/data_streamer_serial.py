@@ -6,19 +6,19 @@ import serial
 
 class DataStreamer(data_streamer_base.DataStreamerBase):
     def __init__(self, port):
-        super().__init__()
-        self.com = serial.Serial(port,115200,timeout=100)
+        self.serial = serial.Serial(port,115200,timeout=100)
         self.wait_until_first_data()
         self.is_exit = False
+        super().__init__()
 
     def run(self):
         while True:
-            res = self.com.readline()
+            res = self.serial.readline()
             self.data = res.decode().replace( '\r\n' , '' ).split(',')
             if self.callback is not None:
                 self.callback(self.data)
             if self.is_exit:
-                #self.com.close()
+                #self.serial.close()
                 #print('stopped DataStreamer4Com')
                 continue
 
@@ -26,12 +26,12 @@ class DataStreamer(data_streamer_base.DataStreamerBase):
         super().set_callback(callback)
         self.is_exit = False
 
-    def stop(self):
-        self.is_exit = True
+    #def stop(self):
+    #    self.is_exit = True
 
     def wait_until_first_data(self):
         while True:
-            res = self.com.readline()
+            res = self.serial.readline()
             n = int.from_bytes( res, 'little' )
 
             try:
@@ -48,5 +48,5 @@ def callback(arg):
     print('callback',arg)
 
 if __name__=="__main__":
-    com = DataStreamer('COM5')
-    com.set_callback(callback)
+    serial = DataStreamer('COM5')
+    serial.set_callback(callback)

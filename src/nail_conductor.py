@@ -56,13 +56,13 @@ class Training():
         self.model.init_train_online()
 
         self.start_time = time.time()
-        self.data_streamer.start()
+        self.data_streamer.begin()
         self.app.start()
 
     def train(self, data):
         now_time = time.time()
         if now_time - self.start_time >= self.measurement_time:
-            self.data_streamer.stop()
+            self.data_streamer.end()
             self.app.stop()
             csv_writer(self.out_csv_filename, self.save_data)
             self.model.finish_train_online(self.optimizer)
@@ -87,12 +87,13 @@ class Predict():
         self.model.init_predict_online()
 
         self.start_time = time.time()
+        self.data_streamer.begin()
         self.app.start()
 
     def predict(self, data):
         now_time = time.time()
         if now_time - self.start_time >= self.measurement_time and self.measurement_time != 0:
-            self.data_streamer.stop()
+            self.data_streamer.end()
             self.app.stop()
             return
 
@@ -126,20 +127,23 @@ def main(ds, app):
                     leaking_rate=parametes.leaking_rate,
                     classification = parametes.no_class, 
                     average_window=parametes.average_window)
+
+
+        training_app = app.TrainingApp(parametes)
+        optimizer = Tikhonov(parametes.node, parametes.num_of_output_classes, 0.1)
+
+        Training(ds, model, training_app, optimizer, out_csv_filename, out_model_filename, measurement_time = parametes.training_time_in_sec)
+        print('Training done')
+
+
     else:
 
         # Load a model file
         with open(in_model_filename, 'rb') as web:
             model = pickle.load(web)
 
-    training_app = app.TrainingApp(parametes)
-    optimizer = Tikhonov(parametes.node, parametes.num_of_output_classes, 0.1)
-
-    Training(ds, model, training_app, optimizer, out_csv_filename, out_model_filename, measurement_time = parametes.training_time_in_sec)
-    print('Training done')
     predict_app = app.PredictApp(parametes)
     Predict(ds, model, predict_app)
-
     predict_app.start()
 
 
