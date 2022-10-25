@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 import app_base
-from matplotlib import pyplot as plt, animation as an
 import numpy as np
-import matplotlib.patches as patches
-import sys
+
 
 ###############################################################################
 # Common
