@@ -149,6 +149,7 @@ def main(ds, app):
 import data_streamer_serial
 import app_famicom
 import app_thumbup
+import app_balloon
 
 if __name__=="__main__":
     params = parser.parse_args()
@@ -170,6 +171,7 @@ if __name__=="__main__":
 
     # Set application class
     #app = app_famicom
+    #app = app_balloon
     app = app_thumbup
 
     try:
