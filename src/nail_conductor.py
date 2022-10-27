@@ -69,9 +69,9 @@ class Training():
             pickle.dump(self.model, open(self.out_model_filename, 'wb'))
 
             return
-
+        # Save raw data
+        self.save_data.append(data)
         print('training',[self.app.get_data(data)])
-        self.save_data.append(self.app.get_data(data))
         pulses, labels = self.app.prepare_data(data)
         self.model.train_online(pulses, labels, self.optimizer) 
 

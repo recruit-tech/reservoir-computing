@@ -58,6 +58,8 @@ class TrainingApp(app_base.TrainingApp):
     def __init__(self, parametes):
         super().__init__()
         self.parametes = parametes
+
+    def start(self):
         pygame.init()
         self.width = 151
         self.height = 181 + 50
@@ -78,7 +80,6 @@ class TrainingApp(app_base.TrainingApp):
         #self.data0 = DataAugmentation(self.parametes)
         self.is_thumb_neutral = True
 
-    def start(self):
         super().start()
         loop = True
         while loop:
