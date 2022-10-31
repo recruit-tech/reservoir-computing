@@ -376,6 +376,10 @@ class PredictApp(app_base.PredictApp):
         self.data = DataAugmentation([self.delta,])
         self.interval = 0.7
         self.classes = ['left', 'right']
+        self.start_time = time.time() - self.interval * 2
+        self.is_neutral = True
+
+        self.wait = False
 
     def wsStart(self):
         self.wsServer.runServer()
@@ -383,62 +387,24 @@ class PredictApp(app_base.PredictApp):
     def start(self):
         super().start()
         loop = True
+        self.now_time = time.time()
         self.wsServer.runServer()
-        self.model.init_predict_online()
+        #self.model.init_predict_online()
         try:
 
-            start_time = time.time() - self.interval * 2
-            is_neutral = True
-
-            wait = False
             while loop:
-                res = self.com.readline()
-                now_time = time.time()
-
-                #print('res', res.decode().split(','))
-                if 'Ready' in res.decode().split(',')[0]:
-                    continue
-                print(res.decode().split(','))
-                pulse, buttons = res.decode().split(',')[0:in_data_dim], res.decode().split(',')[
-                    in_data_dim + 1].replace('\r\n', '')
-
-                predict_result = self.model.predict_online(
-                    np.array(self.data.get_data(pulse)))
-
-                if len(predict_result[-mov_ave:-1]) == 0:
-                    print('P skip02')
-                    continue
-
-                left, right = np.mean(
-                    predict_result[-mov_ave:-1], axis=0)
-
-                if int(buttons) == 1:
+                if self.is_exit == True:
                     # thread.exit_loop()
                     self.is_exit = True
                     return
 
-                    # 経過時間まで処理をスキップ
-                if now_time - start_time > self.interval:
-                    max_value = max([left, right])
-                    print('max_value',max_value)
-                    if max_value > 0.5:
-                        
-                        max_index = [left, right].index(max_value)
-                        print(max_value, self.classes[max_index])
-                        self.wsServer.sendMsgAllClient(self.classes[max_index])
-                        wait = True
-
-                if wait:
-                    print("wait")
-                    start_time = time.time()
-                    wait = False
 
         except KeyboardInterrupt:
-            is_exit = True
+            self.is_exit = True
             return
             # sys.exit
         except Exception as e:
-            is_exit = True
+            self.is_exit = True
             print(e)
             return
 
@@ -462,6 +428,34 @@ class PredictApp(app_base.PredictApp):
 
     def set_predict_result(self, predicted):
         super().set_predict_result(predicted)
+
+        #print('predicted',predicted)
+
+        if len(predicted[-self.parametes.moving_average:-1]) == 0:
+            print('P skip02')
+            return
+
+        left, right = np.mean(
+            predicted[-self.parametes.moving_average:-1], axis=0)
+
+
+            # 経過時間まで処理をスキップ
+        if self.now_time - self.start_time > self.interval:
+            max_value = max([left, right])
+            print('max_value',max_value)
+            if max_value > 0.5:
+                
+                max_index = [left, right].index(max_value)
+                print(max_value, self.classes[max_index])
+                self.wsServer.sendMsgAllClient(self.classes[max_index])
+                self.wait = True
+
+        if self.wait:
+            print("wait")
+            self.start_time = time.time()
+            self.wait = False
+
+
         return
 
     def is_alive(self):
