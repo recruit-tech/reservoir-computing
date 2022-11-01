@@ -45,7 +45,7 @@ class ScalingShift:
 class Training():
     def __init__(self, data_streamer, model, app, optimizer, out_csv_filename, out_model_filename, measurement_time = 60):
         self.data_streamer = data_streamer
-        self.data_streamer.set_callback(self.train)
+        self.data_streamer.begin(self.train)
         self.model = model
         self.app = app
         self.measurement_time = measurement_time
@@ -57,7 +57,6 @@ class Training():
 
         self.start_time = time.time()
         self.app.start()
-        self.data_streamer.begin()
 
     def train(self, data):
         now_time = time.time()
@@ -80,7 +79,7 @@ class Training():
 class Predict():
     def __init__(self, data_streamer, model, app, measurement_time = 0):
         self.data_streamer = data_streamer
-        self.data_streamer.set_callback(self.predict)
+        self.data_streamer.begin(self.predict)
         self.model = model
         self.app = app
         self.measurement_time = measurement_time
@@ -88,7 +87,6 @@ class Predict():
 
         self.start_time = time.time()
         self.app.start()
-        self.data_streamer.begin()
 
     def predict(self, data):
         now_time = time.time()
@@ -177,7 +175,7 @@ if __name__=="__main__":
     try:
         main(ds, app)
     except KeyboardInterrupt:
-        ds.kill()
         print('closeing...')
+    ds.kill()
     exit()
 
