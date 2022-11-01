@@ -135,14 +135,16 @@ class TrainingApp(app_base.TrainingApp):
         pulse00, label = self.get_data(data)
         pulses = [float(pulse00),]
         labels = [float(int(label) == 2), ]
-        if int(label) == 2:
-            if self.is_thumb_neutral == True:
-                pygame.event.post(self.E_THUMB_UP)
-                self.is_thumb_neutral = False
-        else:
-            if self.is_thumb_neutral != True:
-                pygame.event.post(self.E_THUMB_NEUTRAL)
-                self.is_thumb_neutral = True
+
+        if pygame.get_init() == True:
+            if int(label) == 2:
+                if self.is_thumb_neutral == True:
+                    pygame.event.post(self.E_THUMB_UP)
+                    self.is_thumb_neutral = False
+            else:
+                if self.is_thumb_neutral != True:
+                    pygame.event.post(self.E_THUMB_NEUTRAL)
+                    self.is_thumb_neutral = True
 
         return pulses, labels
 
