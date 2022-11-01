@@ -328,8 +328,8 @@ class TrainingApp(app_base.TrainingApp):
 
     def prepare_data(self, data):
         pulse00, pulse01, pulse02, label = self.get_data(data)
-        pulses = np.array(self.data0.get_augmented_data(pulse00) + self.data1.get_augmented_data(pulse01) + self.data2.get_augmented_data(pulse02))
-        labels = np.array([float(int(label) == 1), float(int(label) == 2), float(int(label) == 3), float(int(label) == 4), float(int(label) == 5), float(int(label) == 6)]).reshape((1, -1))
+        pulses = self.data0.get_augmented_data(pulse00) + self.data1.get_augmented_data(pulse01) + self.data2.get_augmented_data(pulse02)
+        labels = [float(int(label) == 1), float(int(label) == 2), float(int(label) == 3), float(int(label) == 4), float(int(label) == 5), float(int(label) == 6)]
         return pulses, labels
 
     def draw_base_circles(self):
