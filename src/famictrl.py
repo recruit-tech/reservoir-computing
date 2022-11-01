@@ -234,13 +234,16 @@ class Game:
             for event in pygame.event.get():
                 ''' End the game only when the 'quit' button is pressed '''
                 if event.type == pygame.QUIT:
-                    close()
+                    print('stopped TrainingApp')
+                    pygame.quit()
+                    self.is_exit = True
+                    return
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_q:
-                        self.close()
-                    if event.key == pygame.K_r:
-                        self.score = 0
-                        self.run()
+                        print('stopped TrainingApp')
+                        pygame.quit()
+                        self.is_exit = True
+                        return
 
                     if event.key == pygame.K_w:
                         pygame.event.post(self.E_UP)
