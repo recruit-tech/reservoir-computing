@@ -105,10 +105,10 @@ def get_title_from_params(parametes):
 
     return "-".join(title)
 
-def get_valid_argumented_data_from_rawdata(app, raw_data):
+def get_valid_argumented_data_from_csvdata(app, csv_data):
     data = []
-    for raw_value in raw_data:
-        pulses, labels = app.prepare_data(raw_value)
+    for value in csv_data:
+        pulses, labels = app.prepare_data(value)
         data.append(pulses + labels)
     data = np.array(data)
     return data
@@ -140,9 +140,9 @@ def main(app):
     optimizer = Tikhonov(parametes.node, parametes.num_of_output_classes, 0.1)
 
 
-    raw_data = read_csv_data(csv_file)
+    csv_data = read_csv_data(csv_file)
 
-    data = get_valid_argumented_data_from_rawdata(training_app, raw_data)
+    data = get_valid_argumented_data_from_csvdata(training_app, csv_data)
 
     if len(data) == 0:
         print('csv data is None')
@@ -316,6 +316,7 @@ def run(*_args):
     main(params.target_data, params)
 
 import app_thumbup
+import app_volume
 
 if __name__ == '__main__':
     params = parser.parse_args()
@@ -334,6 +335,7 @@ if __name__ == '__main__':
     # Set application class
     #app = app_famicom
     #app = app_balloon
+    #app = app_thumbup
     app = app_thumbup
 
     try:

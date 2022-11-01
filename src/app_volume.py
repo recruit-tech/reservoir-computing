@@ -303,6 +303,9 @@ class TrainingApp(app_base.TrainingApp):
     def stop(self):
         super().stop()
 
+    def get_rawdata_and_labels(self, rawdata):
+        data = rawdata , self.get_label()
+        return data
 
     def get_data(self, data):
         pulse00 = float(data[0])
@@ -361,7 +364,6 @@ class PredictApp(app_base.PredictApp):
         self.parametes = parametes
         self.delta = self.parametes.delta
         self.data = DataAugmentation([self.delta,])
-
         HOST = 'localhost'  # IPアドレスopen
         PORT = 9999  # ポートを指定
         self.wsServer = WsServer(HOST, PORT)
@@ -397,7 +399,6 @@ class PredictApp(app_base.PredictApp):
                     # thread.exit_loop()
                     self.is_exit = True
                     return
-
 
         except KeyboardInterrupt:
             self.is_exit = True

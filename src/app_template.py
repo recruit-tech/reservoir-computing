@@ -74,6 +74,8 @@ class TrainingApp(app_base.TrainingApp):
     def stop(self):
         super().stop()
 
+    def get_rawdata_and_labels(self, rawdata):
+        return rawdata
 
     def get_data(self, data):
         pulse00 = data[0]

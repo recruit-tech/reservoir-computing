@@ -313,13 +313,18 @@ class TrainingApp(app_base.TrainingApp):
     def stop(self):
         super().stop()
 
+    def get_rawdata_and_labels(self, rawdata):
+        data = rawdata + [self.get_label(),]
+        return data
+
     def get_data(self, data):
         pulse00 = data[0]
         pulse01 = data[1]
         pulse02 = data[2]
         pulse03 = data[3]
         buttons = data[4]
-        return pulse00, pulse01, pulse02, self.label
+        label   = data[5]
+        return pulse00, pulse01, pulse02, label
 
     def prepare_data(self, data):
         pulse00, pulse01, pulse02, label = self.get_data(data)

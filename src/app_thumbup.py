@@ -122,6 +122,8 @@ class TrainingApp(app_base.TrainingApp):
     #    pygame.quit()
     #    #sys.exit()
     
+    def get_rawdata_and_labels(self, rawdata):
+        return rawdata
 
     def get_data(self, data):
         pulse00 = data[0]
@@ -223,7 +225,6 @@ class PredictApp(app_base.PredictApp):
     #    pygame.quit()
     #    sys.exit()
     
-
     def get_data(self, data):
         pulse00 = data[0]
         #pulse01 = data[1]

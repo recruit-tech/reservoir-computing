@@ -44,6 +44,10 @@ class TrainingApp(metaclass=ABCMeta):
         pass
 
     @abstractmethod
+    def get_rawdata_and_labels(self, rawdata):
+        pass
+
+    @abstractmethod
     def is_alive(self):
         return self.is_exit != True
 

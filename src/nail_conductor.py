@@ -69,9 +69,10 @@ class Training():
 
             return
         # Save raw data
-        self.save_data.append(data)
-        print('training',[self.app.get_data(data)])
-        pulses, labels = self.app.prepare_data(data)
+        csv_data = self.app.get_rawdata_and_labels(data)
+        print('training',csv_data)
+        self.save_data.append(csv_data)
+        pulses, labels = self.app.prepare_data(csv_data)
         self.model.train_online(pulses, labels, self.optimizer) 
 
 
@@ -165,7 +166,7 @@ if __name__=="__main__":
     out_model_filename = os.path.join(save_dir, 'model_' + now.strftime('%Y%m%d_%H%M%S') + '.pkl')
 
     # Set com port as data streamer
-    ds = data_streamer_serial.DataStreamer('COM5')
+    ds = data_streamer_serial.DataStreamer('COM3')
 
     # Set application class
     #app = app_famicom
