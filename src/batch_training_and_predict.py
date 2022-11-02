@@ -105,7 +105,7 @@ def get_title_from_params(parametes):
 
     return "-".join(title)
 
-def get_valid_argumented_data_from_csvdata(app, csv_data):
+def get_valid_augmented_data_from_csvdata(app, csv_data):
     data = []
     for value in csv_data:
         pulses, labels = app.prepare_data(value)
@@ -120,6 +120,7 @@ def main(app):
     parametes = app.Parameters(parser)
     training_app = app.TrainingApp(parametes)
 
+    # title is used for csv and model(pkl) name.
     title = get_title_from_params(parametes)
 
     # 出力のスケーリング関数
@@ -140,10 +141,11 @@ def main(app):
 
     optimizer = Tikhonov(parametes.node, parametes.num_of_output_classes, 0.1)
 
-
+    # Read csv file 
     csv_data = read_csv_data(csv_file)
 
-    data = get_valid_argumented_data_from_csvdata(training_app, csv_data)
+    # Getting data for training which is augmented data
+    data = get_valid_augmented_data_from_csvdata(training_app, csv_data)
 
     if len(data) == 0:
         print('csv data is None')
@@ -153,14 +155,12 @@ def main(app):
     n_wave_train = 0.6 # トレーニング6割
     n_wave_test = 1 - n_wave_train
 
+    # Get num of output data
     gt_dim = len(data[0]) - parametes.num_of_augmented_data
 
-    # 時系列入力データ
-    period = 100
-
+    # u are sensor and augmented data, d are label data.
     u = data[:, :parametes.num_of_augmented_data]
     d = data[:, parametes.num_of_augmented_data:].reshape(-1, gt_dim)
-    #d = data[:, parametes.num_of_augmented_data]
     T = int(len(d) * n_wave_train)
 
     # 訓練・検証用情報
@@ -223,8 +223,6 @@ def main(app):
 
     ###
 
-    target = test_D[0:int(period * n_wave_test * 100 / gt_dim):period, gt_dim - 1]
-
     disp_train_width = int(len(d) * n_wave_train)
     disp_test_width = int(len(d) * n_wave_test)
 
@@ -237,8 +235,7 @@ def main(app):
 
     # グラフ表示
     plt.rcParams['font.size'] = 10
-    #fig = plt.figure(figsize = (40, 12), dpi=240)
-    fig = plt.figure(figsize = (40, 120), dpi=240)
+    fig = plt.figure(figsize = (40, 12), dpi=240)
     plt.subplots_adjust(hspace = 0.3)
 
     graph_name = title + '-mva' + str(m_avg) + '-acc'+ str('{:.2f}'.format(accuracy_one*100))  \
@@ -259,11 +256,10 @@ def main(app):
     for i in range(parametes.num_of_input_data):
         ax = fig.add_subplot(parametes.num_of_input_data + gt_dim, 1, i + 1)
         if i == 0:
-            ax.text(-0.1, 1, '(a)', transform=ax.transAxes)
+            #ax.text(-0.1, 1, '(a)', transform=ax.transAxes)
             ax.text(0.2, 1.05, 'Training', transform=ax.transAxes)
             ax.text(0.7, 1.05, 'Testing', transform=ax.transAxes)
         ax.plot(t_axis, disp_U[:, i*int(parametes.num_of_augmented_data/parametes.num_of_input_data)], color='blue')
-        #ax.plot(t_axis, disp_U[:, i], color='blue')
         plt.ylabel('input #'+ str(i))
         plt.axvline(x=0, ymin=0, ymax=1, color='gray', linestyle=':')
 
