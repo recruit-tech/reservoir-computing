@@ -123,18 +123,19 @@ class TrainingApp(app_base.TrainingApp):
     #    #sys.exit()
     
     def get_rawdata_and_labels(self, rawdata):
-        return rawdata
+        csv_data = rawdata
+        return csv_data
 
-    def get_data(self, data):
-        pulse00 = data[0]
-        #pulse01 = data[1]
-        #pulse02 = data[2]
-        #pulse03 = data[3]
-        buttons = data[4]
+    def get_data(self, csv_data):
+        pulse00 = csv_data[0]
+        #pulse01 = csv_data[1]
+        #pulse02 = csv_data[2]
+        #pulse03 = csv_data[3]
+        buttons = csv_data[4]
         return pulse00, buttons
 
-    def prepare_data(self, data):
-        pulse00, label = self.get_data(data)
+    def prepare_data(self, csv_data):
+        pulse00, label = self.get_data(csv_data)
         pulses = [float(pulse00),]
         labels = [float(int(label) == 2), ]
 
@@ -225,16 +226,16 @@ class PredictApp(app_base.PredictApp):
     #    pygame.quit()
     #    sys.exit()
     
-    def get_data(self, data):
-        pulse00 = data[0]
-        #pulse01 = data[1]
-        #pulse02 = data[2]
-        #pulse03 = data[3]
-        buttons = data[4]
+    def get_data(self, rawdata):
+        pulse00 = rawdata[0]
+        #pulse01 = rawdata[1]
+        #pulse02 = rawdata[2]
+        #pulse03 = rawdata[3]
+        buttons = rawdata[4]
         return pulse00
 
-    def prepare_data(self, data):
-        pulse00 = self.get_data(data)
+    def prepare_data(self, rawdata):
+        pulse00 = self.get_data(rawdata)
         pulses = [float(pulse00),]
 
         return pulses

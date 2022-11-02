@@ -58,7 +58,7 @@ class Training():
         self.start_time = time.time()
         self.app.start()
 
-    def train(self, data):
+    def train(self, rawdata):
         now_time = time.time()
         if now_time - self.start_time >= self.measurement_time or self.app.is_alive() == False:
             self.data_streamer.end()
@@ -69,7 +69,7 @@ class Training():
 
             return
         # Save raw data
-        csv_data = self.app.get_rawdata_and_labels(data)
+        csv_data = self.app.get_rawdata_and_labels(rawdata)
         print('training',csv_data)
         self.save_data.append(csv_data)
         pulses, labels = self.app.prepare_data(csv_data)
@@ -89,15 +89,15 @@ class Predict():
         self.start_time = time.time()
         self.app.start()
 
-    def predict(self, data):
+    def predict(self, rawdata):
         now_time = time.time()
         if (now_time - self.start_time >= self.measurement_time and self.measurement_time != 0) or self.app.is_alive() == False:
             self.data_streamer.end()
             self.app.stop()
             return
 
-        print('predict',[self.app.get_data(data)])
-        pulses = self.app.prepare_data(data)
+        print('predict',self.app.prepare_data(rawdata))
+        pulses = self.app.prepare_data(rawdata)
         predict_result = self.model.predict_online(pulses) 
         self.app.set_predict_result(predict_result)
 
@@ -149,6 +149,7 @@ import data_streamer_serial
 import app_famicom
 import app_thumbup
 import app_balloon
+import app_volume
 
 if __name__=="__main__":
     params = parser.parse_args()
@@ -172,6 +173,7 @@ if __name__=="__main__":
     #app = app_famicom
     #app = app_balloon
     app = app_thumbup
+    #app = app_volume
 
     try:
         main(ds, app)

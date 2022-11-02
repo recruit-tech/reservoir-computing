@@ -296,30 +296,28 @@ class TrainingApp(app_base.TrainingApp):
         return y <= -100
 
     def get_label(self):
-        labels = np.array([float(int(self.label) == 1), float(int(self.label) == 2)]).reshape((1, -1))
-
+        #labels = np.array([float(int(self.label) == 1), float(int(self.label) == 2)]).reshape((1, -1))
+        labels = self.label
         return labels
 
     def stop(self):
         super().stop()
 
     def get_rawdata_and_labels(self, rawdata):
-        data = rawdata , self.get_label()
-        return data
+        csv_data = rawdata + [self.get_label(),]
+        return csv_data
 
-    def get_data(self, data):
-        pulse00 = float(data[0])
-        pulse01 = float(data[1])
-        return pulse00, pulse01
+    def get_data(self, csv_data):
+        pulse00 = csv_data[0]
+        pulse01 = csv_data[1]
+        label   = csv_data[5]
+        return pulse00, pulse01, label
 
-    def prepare_data(self, data):
-        pulse00, pulse01  = self.get_data(data)
-        #print(pulse00, pulse01)
-        #print(self.get_label())
-        pulses = np.array(self.data.get_augmented_data([pulse00,pulse01]))
-        #pulses = np.array(pulse00 + pulse01)
-        #pulses = np.array([pulse00 , pulse01])
-        return pulses, self.get_label()
+    def prepare_data(self, csv_data):
+        pulse00, pulse01, label  = self.get_data(csv_data)
+        pulses = self.data.get_augmented_data([pulse00,pulse01])
+        labels = [label,]
+        return pulses, labels
 
     def is_alive(self):
         return super().is_alive()
@@ -413,13 +411,13 @@ class PredictApp(app_base.PredictApp):
     def stop(self):
         super().stop()
 
-    def get_data(self, data):
-        pulse00 = float(data[0])
-        pulse01 = float(data[1])
+    def get_data(self, rawdata):
+        pulse00 = float(rawdata[0])
+        pulse01 = float(rawdata[1])
         return pulse00, pulse01
 
-    def prepare_data(self, data):
-        pulse00, pulse01  = self.get_data(data)
+    def prepare_data(self, rawdata):
+        pulse00, pulse01  = self.get_data(rawdata)
         #print(pulse00, pulse01)
         #print(self.get_label())
         pulses = np.array(self.data.get_augmented_data([pulse00,pulse01]))

@@ -317,17 +317,17 @@ class TrainingApp(app_base.TrainingApp):
         data = rawdata + [self.get_label(),]
         return data
 
-    def get_data(self, data):
-        pulse00 = data[0]
-        pulse01 = data[1]
-        pulse02 = data[2]
-        pulse03 = data[3]
-        buttons = data[4]
-        label   = data[5]
+    def get_data(self, csv_data):
+        pulse00 = csv_data[0]
+        pulse01 = csv_data[1]
+        pulse02 = csv_data[2]
+        pulse03 = csv_data[3]
+        buttons = csv_data[4]
+        label   = csv_data[5]
         return pulse00, pulse01, pulse02, label
 
-    def prepare_data(self, data):
-        pulse00, pulse01, pulse02, label = self.get_data(data)
+    def prepare_data(self, csv_data):
+        pulse00, pulse01, pulse02, label = self.get_data(csv_data)
         pulses = self.data0.get_augmented_data(pulse00) + self.data1.get_augmented_data(pulse01) + self.data2.get_augmented_data(pulse02)
         labels = [float(int(label) == 1), float(int(label) == 2), float(int(label) == 3), float(int(label) == 4), float(int(label) == 5), float(int(label) == 6)]
         return pulses, labels
@@ -415,16 +415,16 @@ class PredictApp(app_base.PredictApp):
     def stop(self):
         super().stop()
 
-    def get_data(self, data):
-        pulse00 = data[0]
-        pulse01 = data[1]
-        pulse02 = data[2]
-        pulse03 = data[3]
-        buttons = data[4]
+    def get_data(self, rawdata):
+        pulse00 = rawdata[0]
+        pulse01 = rawdata[1]
+        pulse02 = rawdata[2]
+        pulse03 = rawdata[3]
+        buttons = rawdata[4]
         return pulse00, pulse01, pulse02
 
-    def prepare_data(self, data):
-        pulse00, pulse01, pulse02 = self.get_data(data)
+    def prepare_data(self, rawdata):
+        pulse00, pulse01, pulse02 = self.get_data(rawdata)
         pulses = np.array(self.data0.get_augmented_data(pulse00) + self.data1.get_augmented_data(pulse01) + self.data2.get_augmented_data(pulse02))
         return pulses
 

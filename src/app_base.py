@@ -40,11 +40,13 @@ class TrainingApp(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def prepare_data(self, data):
+    def prepare_data(self, csv_data):
+        # Make training data from csv_data
         pass
 
     @abstractmethod
     def get_rawdata_and_labels(self, rawdata):
+        # Make csv data from rawdata and labels
         pass
 
     @abstractmethod
@@ -65,7 +67,7 @@ class PredictApp(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def prepare_data(self, data):
+    def prepare_data(self, rawdata):
         pass
 
     @abstractmethod

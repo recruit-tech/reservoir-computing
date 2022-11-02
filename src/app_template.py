@@ -77,13 +77,13 @@ class TrainingApp(app_base.TrainingApp):
     def get_rawdata_and_labels(self, rawdata):
         return rawdata
 
-    def get_data(self, data):
-        pulse00 = data[0]
-        buttons = data[4]
+    def get_data(self, csv_data):
+        pulse00 = csv_data[0]
+        buttons = csv_data[4]
         return pulse00, buttons
 
-    def prepare_data(self, data):
-        pulse00, label = self.get_data(data)
+    def prepare_data(self, csv_data):
+        pulse00, label = self.get_data(csv_data)
         pulses = [float(pulse00),]
         labels = [float(int(label) == 2), ]
         return pulses, labels
@@ -111,16 +111,16 @@ class PredictApp(app_base.PredictApp):
     def stop(self):
         super().stop()
 
-    def get_data(self, data):
-        pulse00 = data[0]
+    def get_data(self, rawdata):
+        pulse00 = rawdata[0]
         #pulse01 = data[1]
         #pulse02 = data[2]
         #pulse03 = data[3]
-        buttons = data[4]
+        buttons = rawdata[4]
         return pulse00
 
-    def prepare_data(self, data):
-        pulse00 = self.get_data(data)
+    def prepare_data(self, rawdata):
+        pulse00 = self.get_data(rawdata)
         pulses = [float(pulse00),]
 
         return pulses
