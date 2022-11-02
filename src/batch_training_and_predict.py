@@ -109,6 +109,7 @@ def get_valid_argumented_data_from_csvdata(app, csv_data):
     data = []
     for value in csv_data:
         pulses, labels = app.prepare_data(value)
+        #print('value, pulses.shape, labels.shape',value, pulses.shape, labels.shape)
         data.append(pulses + labels)
     data = np.array(data)
     return data
@@ -125,7 +126,7 @@ def main(app):
     output_func = ScalingShift([1.0], [1.0])
 
     # Create model with the hyper parameters
-    model = ESN(parametes.num_of_input_data, 
+    model = ESN(parametes.num_of_augmented_data, 
                 parametes.num_of_output_classes, 
                 parametes.node, 
                 density=parametes.density,
@@ -152,21 +153,21 @@ def main(app):
     n_wave_train = 0.6 # トレーニング6割
     n_wave_test = 1 - n_wave_train
 
-    gt_dim = len(data[0]) - parametes.num_of_input_data
+    gt_dim = len(data[0]) - parametes.num_of_augmented_data
 
     # 時系列入力データ
     period = 100
 
-    u = data[:, :parametes.num_of_input_data]
-    d = data[:, parametes.num_of_input_data:].reshape(-1, gt_dim)
-    #d = data[:, parametes.num_of_input_data]
+    u = data[:, :parametes.num_of_augmented_data]
+    d = data[:, parametes.num_of_augmented_data:].reshape(-1, gt_dim)
+    #d = data[:, parametes.num_of_augmented_data]
     T = int(len(d) * n_wave_train)
 
     # 訓練・検証用情報
-    train_U = u[:T].reshape(-1, parametes.num_of_input_data)
+    train_U = u[:T].reshape(-1, parametes.num_of_augmented_data)
     train_D = d[:T]
 
-    test_U = u[T:].reshape(-1, parametes.num_of_input_data)
+    test_U = u[T:].reshape(-1, parametes.num_of_augmented_data)
     test_D = d[T:]
 
 
@@ -236,7 +237,8 @@ def main(app):
 
     # グラフ表示
     plt.rcParams['font.size'] = 10
-    fig = plt.figure(figsize = (40, 12), dpi=240)
+    #fig = plt.figure(figsize = (40, 12), dpi=240)
+    fig = plt.figure(figsize = (40, 120), dpi=240)
     plt.subplots_adjust(hspace = 0.3)
 
     graph_name = title + '-mva' + str(m_avg) + '-acc'+ str('{:.2f}'.format(accuracy_one*100))  \
@@ -255,14 +257,17 @@ def main(app):
 
 
     sensors = ['Right thumb','Left thumb','Left middle finger']
-    for i in range(parametes.num_of_input_data):
-
-        ax = fig.add_subplot(parametes.num_of_input_data + gt_dim, 1, i + 1)
+    print('parametes.num_of_augmented_data',parametes.num_of_augmented_data)
+    print('disp_U.shape',disp_U.shape)
+    for i in range(parametes.num_of_augmented_data):
+        print('i',i)
+        ax = fig.add_subplot(parametes.num_of_augmented_data + gt_dim, 1, i + 1)
         if i == 0:
             ax.text(-0.1, 1, '(a)', transform=ax.transAxes)
             ax.text(0.2, 1.05, 'Training', transform=ax.transAxes)
             ax.text(0.7, 1.05, 'Testing', transform=ax.transAxes)
-        ax.plot(t_axis, disp_U[:, i*2], color='blue')
+        #ax.plot(t_axis, disp_U[:, i*2], color='blue')
+        ax.plot(t_axis, disp_U[:, i], color='blue')
         plt.ylabel('input #'+ str(i))
         plt.axvline(x=0, ymin=0, ymax=1, color='gray', linestyle=':')
 
@@ -272,7 +277,7 @@ def main(app):
     buttons = ['up','down','left','right']
     lines=[]
     for i in range(gt_dim):
-        ax = fig.add_subplot(parametes.num_of_input_data + gt_dim, 1, parametes.num_of_input_data + i + 1)
+        ax = fig.add_subplot(parametes.num_of_augmented_data + gt_dim, 1, parametes.num_of_augmented_data + i + 1)
         l0 = ax.plot(t_axis, disp_D[:,i], color='gray', linestyle='-', label='labels', linewidth=1)
         l1 = ax.plot(t_axis, disp_Y[:,i], color='orange', linestyle='-', label='predicts', linewidth=1)
         l2 = ax.plot(t_axis, np.where(disp_Y[:,i]>0.5,0.8,0), color='green', linestyle='-', label='pred. bin', linewidth=1)
@@ -317,6 +322,7 @@ def run(*_args):
 
 import app_thumbup
 import app_volume
+import app_famicom
 
 if __name__ == '__main__':
     params = parser.parse_args()
@@ -333,10 +339,10 @@ if __name__ == '__main__':
     out_model_filename = os.path.join(save_dir, 'model_' + now.strftime('%Y%m%d_%H%M%S') + '.pkl')
 
     # Set application class
-    #app = app_famicom
+    app = app_famicom
     #app = app_balloon
     #app = app_thumbup
-    app = app_thumbup
+    #app = app_volume
 
     try:
         main(app)

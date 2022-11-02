@@ -116,7 +116,7 @@ def main(ds, app):
         output_func = ScalingShift([1.0], [1.0])
 
         # Create model with the hyper parameters
-        model = ESN(parametes.num_of_input_data, 
+        model = ESN(parametes.num_of_augmented_data, 
                     parametes.num_of_output_classes, 
                     parametes.node, 
                     density=parametes.density,
@@ -170,9 +170,9 @@ if __name__=="__main__":
     ds = data_streamer_serial.DataStreamer('COM3')
 
     # Set application class
-    #app = app_famicom
+    app = app_famicom
     #app = app_balloon
-    app = app_thumbup
+    #app = app_thumbup
     #app = app_volume
 
     try:
