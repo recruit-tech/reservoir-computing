@@ -8,7 +8,7 @@ You might need to implement codes on a device like arduino for getting data from
 
 Here is a sample code which runs on arduino for 4 sensors and 3 buttons. You can custom it for your applications.
 
-./src/arduino/puls_sensors_sample/puls_sensors_sample.ino
+[puls_sensors_sample.ino](https://github.com/recruit-tech/reservoir-computing/blob/master/src/arduino/puls_sensors_sample/puls_sensors_sample.ino)
 
 
 ![Overview diagram](imgs/overview.png "overview")
@@ -24,7 +24,7 @@ python nail_conductor.py
 
 To quit the program, push [q] key on the screen or ctrl + c on the terminal.
 
-You can also run a cardboard controller( famicom ) when you change code as follows in ./src/nail_conductor.py
+You can also run a cardboard controller( famicom ) when you change code as follows in [nail_conductor.py](https://github.com/recruit-tech/reservoir-computing/blob/master/src/nail_conductor.py)
 
  ```
     # Set application class
@@ -42,5 +42,19 @@ If you would like to make YOUR APPs, you only need to write 4 claasses which is 
 
 ![Class diagram](imgs/class_diagram.png "class_diagram")
 
+***
+
+## Batch training and predict framework
+[batch_training_and_predict.py](https://github.com/recruit-tech/reservoir-computing/blob/master/src/batch_training_and_predict.py) is batch program which train and predict and outputs a figure as follow.
 
 
+
+![batch fig.](imgs/batch_fig_thumup_training_and_predict.png "batch_fig_thumup_training_and_predict")
+
+### Usage
+
+how to run the batch program for thumup detection.
+ ```
+cd reservoir-computing/src
+python batch_training_and_predict.py -csv_file output/train_log_20221101_115348.csv
+ ```
