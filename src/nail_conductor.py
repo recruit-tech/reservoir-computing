@@ -170,9 +170,9 @@ if __name__=="__main__":
     ds = data_streamer_serial.DataStreamer('COM3')
 
     # Set application class
-    app = app_famicom
+    #app = app_famicom
     #app = app_balloon
-    #app = app_thumbup
+    app = app_thumbup
     #app = app_volume
 
     try:

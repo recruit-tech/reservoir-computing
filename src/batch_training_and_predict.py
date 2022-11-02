@@ -256,28 +256,23 @@ def main(app):
     check.on_clicked(func)
 
 
-    sensors = ['Right thumb','Left thumb','Left middle finger']
-    print('parametes.num_of_augmented_data',parametes.num_of_augmented_data)
-    print('disp_U.shape',disp_U.shape)
-    for i in range(parametes.num_of_augmented_data):
-        print('i',i)
-        ax = fig.add_subplot(parametes.num_of_augmented_data + gt_dim, 1, i + 1)
+    for i in range(parametes.num_of_input_data):
+        ax = fig.add_subplot(parametes.num_of_input_data + gt_dim, 1, i + 1)
         if i == 0:
             ax.text(-0.1, 1, '(a)', transform=ax.transAxes)
             ax.text(0.2, 1.05, 'Training', transform=ax.transAxes)
             ax.text(0.7, 1.05, 'Testing', transform=ax.transAxes)
-        #ax.plot(t_axis, disp_U[:, i*2], color='blue')
-        ax.plot(t_axis, disp_U[:, i], color='blue')
+        ax.plot(t_axis, disp_U[:, i*int(parametes.num_of_augmented_data/parametes.num_of_input_data)], color='blue')
+        #ax.plot(t_axis, disp_U[:, i], color='blue')
         plt.ylabel('input #'+ str(i))
         plt.axvline(x=0, ymin=0, ymax=1, color='gray', linestyle=':')
 
 
 
     plt.suptitle(graph_name, fontsize=9)
-    buttons = ['up','down','left','right']
     lines=[]
     for i in range(gt_dim):
-        ax = fig.add_subplot(parametes.num_of_augmented_data + gt_dim, 1, parametes.num_of_augmented_data + i + 1)
+        ax = fig.add_subplot(parametes.num_of_input_data + gt_dim, 1, parametes.num_of_input_data + i + 1)
         l0 = ax.plot(t_axis, disp_D[:,i], color='gray', linestyle='-', label='labels', linewidth=1)
         l1 = ax.plot(t_axis, disp_Y[:,i], color='orange', linestyle='-', label='predicts', linewidth=1)
         l2 = ax.plot(t_axis, np.where(disp_Y[:,i]>0.5,0.8,0), color='green', linestyle='-', label='pred. bin', linewidth=1)
@@ -339,9 +334,9 @@ if __name__ == '__main__':
     out_model_filename = os.path.join(save_dir, 'model_' + now.strftime('%Y%m%d_%H%M%S') + '.pkl')
 
     # Set application class
-    app = app_famicom
+    #app = app_famicom
     #app = app_balloon
-    #app = app_thumbup
+    app = app_thumbup
     #app = app_volume
 
     try:
