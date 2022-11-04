@@ -242,8 +242,8 @@ def main(app):
                                              + 'x'   + str('{:.2f}'.format(accuracy_zero*100)) \
                                              + '='   + str('{:.2f}'.format(accuracy*100))
     rax = plt.axes([0.9, 0.4, 0.1, 0.3])
-    labels = ['labels','predicts','pred. bin','TP','TN','FN','FP']
-    visibility = [True,True,True,True]
+    labels = ['labels','predicts','pred. bin','True Positive','True Negative','False Negative','False Positive']
+    visibility = [True,True,True,True,True,True,True]
     check = CheckButtons(rax, labels, visibility)
     def func(label):
         index = labels.index(label)
@@ -252,11 +252,13 @@ def main(app):
             plt.draw()
     check.on_clicked(func)
 
+    # The title includes parameters of training
+    plt.suptitle(graph_name, fontsize=9)
 
+    # Chart for input data without aurgmened data
     for i in range(parametes.num_of_input_data):
         ax = fig.add_subplot(parametes.num_of_input_data + gt_dim, 1, i + 1)
         if i == 0:
-            #ax.text(-0.1, 1, '(a)', transform=ax.transAxes)
             ax.text(0.2, 1.05, 'Training', transform=ax.transAxes)
             ax.text(0.7, 1.05, 'Testing', transform=ax.transAxes)
         ax.plot(t_axis, disp_U[:, i*int(parametes.num_of_augmented_data/parametes.num_of_input_data)], color='blue')
@@ -264,29 +266,41 @@ def main(app):
         plt.axvline(x=0, ymin=0, ymax=1, color='gray', linestyle=':')
 
 
-
-    plt.suptitle(graph_name, fontsize=9)
+    # Chart for output data which means classes
     lines=[]
     for i in range(gt_dim):
         ax = fig.add_subplot(parametes.num_of_input_data + gt_dim, 1, parametes.num_of_input_data + i + 1)
+
+        #  Square waves of labels
         l0 = ax.plot(t_axis, disp_D[:,i], color='gray', linestyle='-', label='labels', linewidth=1)
+        
+        # Predict result
         l1 = ax.plot(t_axis, disp_Y[:,i], color='orange', linestyle='-', label='predicts', linewidth=1)
+
+        # Square waves of predict
         l2 = ax.plot(t_axis, np.where(disp_Y[:,i]>0.5,0.8,0), color='green', linestyle='-', label='pred. bin', linewidth=1)
-        t = np.array([1 if x == y else 0 for (x, y) in zip(disp_D[:,i], np.where(disp_Y[:,i]>0.5,1,0))])
+
+        # True Positive
         tp = np.array([1 if (x == 1) & (y == 1) else 0 for (x, y) in zip(disp_D[:,i], np.where(disp_Y[:,i]>0.5,1,0))])
+        l3 = ax.plot(t_axis, np.where(tp==1, 1.1,None) , color='blue', linestyle='-', label='True Positive', linewidth=1)
+
+        # True Negative
         tn = np.array([1 if (x == 0) & (y == 0) else 0 for (x, y) in zip(disp_D[:,i], np.where(disp_Y[:,i]>0.5,1,0))])
+        l4 = ax.plot(t_axis, np.where(tn==1, 1.1,None) , color='red', linestyle='-', label='True Negative', linewidth=1)
+
+        # False Negative
         fn = np.array([1 if (x == 1) & (y == 0) else 0 for (x, y) in zip(disp_D[:,i], np.where(disp_Y[:,i]>0.5,1,0))])
+        l5 = ax.plot(t_axis, np.where(fn==1,-0.1,None) , color='blue', linestyle='-', label='False Negative', linewidth=1)
+
+        # False Positive
         fp = np.array([1 if (x == 0) & (y == 1) else 0 for (x, y) in zip(disp_D[:,i], np.where(disp_Y[:,i]>0.5,1,0))])
-        l4 = ax.plot(t_axis, np.where(tn==1, 1.1,None) , color='red', linestyle='-', label='TN', linewidth=1)
-        l3 = ax.plot(t_axis, np.where(tp==1, 1.1,None) , color='blue', linestyle='-', label='TP', linewidth=1)
-        l6 = ax.plot(t_axis, np.where(fp==1,-0.1,None) , color='red', linestyle='-', label='FP', linewidth=1)
-        l5 = ax.plot(t_axis, np.where(fn==1,-0.1,None) , color='blue', linestyle='-', label='FN', linewidth=1)
-        precision = len(np.where(tp==1)) / (len(np.where(tp==1))+len(np.where(fp==1)))
-        recall = len(np.where(tp==1)) / (len(np.where(tp==1)) + len(np.where(fn==1)))
-        ax.set_ylabel('class #' + str(i))
+        l6 = ax.plot(t_axis, np.where(fp==1,-0.1,None) , color='red', linestyle='-', label='False Positive', linewidth=1)
 
         ax.axvline(x=0, ymin=0, ymax=1, color='k', linestyle='--', linewidth=1)
         ax.axhline(y=0.5, xmin=0, xmax=1, color='k', linestyle='--', linewidth=1)
+
+        ax.set_ylabel('class #' + str(i))
+
         lines.append((l0,l1,l2,l3,l4,l5,l6))
 
     save_name = os.path.join(params.save_dir, graph_name + '.png')
