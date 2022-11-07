@@ -24,12 +24,13 @@ python nail_conductor.py
 
 To quit the program, push [q] key on the screen or ctrl + c on the terminal.
 
-You can also run a cardboard controller( famicom ) when you change code as follows in [nail_conductor.py](https://github.com/recruit-tech/reservoir-computing/blob/master/src/nail_conductor.py)
+You can also run a cardboard controller( famicom ) when you change code as follows in [.env](https://github.com/recruit-tech/reservoir-computing/blob/master/src/.env)
 
  ```
-    # Set application class
-    app = app_famicom
-    #app = app_thumbup
+#APPLICATION_NAME=app_thumbup
+APPLICATION_NAME=app_famicom
+#APPLICATION_NAME=app_balloon
+#APPLICATION_NAME=app_volume
  ```
 
 You will see the following images. (upper:training screen, lower: predict screen)
