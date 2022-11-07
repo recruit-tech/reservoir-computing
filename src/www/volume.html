@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Volume action</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Add the slick-theme.css if you want default styling -->
+    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
+    <!-- Add the slick-theme.css if you want default styling -->
+    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css" />
+</head>
+<script src="https://code.jquery.com/jquery-3.6.1.min.js"
+    integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+<script>
+    var host = 'localhost'
+    var port = '9999'
+    var uri = 'ws://' + host + ':' + port;
+    var centerImageIndex = 0;
+    var currentAngle = 0;
+
+
+    window.onload = function () {
+        connection = new WebSocket(uri);
+        connection.onopen = onOpen;
+        connection.onmessage = onMessage;
+    }
+
+    function onOpen(event) {
+        console.log("Connect successful!");
+    }
+
+    function onMessage(event) {
+        console.log(event.data);
+
+        $("#volumeMainImage").removeClass('animation');
+
+        switch (event.data) {
+            case 'left':
+                volumeRotate(-30);
+                break;
+            case 'right':
+                volumeRotate(30);
+                break;
+        }
+    }
+
+    function volumeRotate(val) {
+        const volume = $("#volumeMainImage");
+
+        if (val > 0 && (currentAngle >= 120)) return;
+        if (val < 0 && (currentAngle <= -120)) return;
+
+        volume.animate({ zIndex: 1 }, {
+            //1秒かけてアニメーション
+            duration: 700,
+            //stepは、アニメーションが進むたびに呼ばれる
+            step: function (now) {
+                //nowに現在のz-indexの値（0から1に変化しているところ）が渡してもらえる
+                volume.css({transform: 'rotate(' + (now * val + currentAngle) + 'deg)'});
+            },
+            //終わったら
+            complete: function () {
+                //次のために、元に戻しておく
+                volume.css('zIndex', 0);
+                currentAngle += val;
+                console.log(currentAngle);
+            }
+        })
+    }
+
+    function volumeRotate2(val) {
+        const volume = $("#volumeMainImage");
+        volume.css('animation', 'rotate-anime30 0.5s linear forwards');
+        console.log(volume.css('animation'));
+    }
+
+    function websocketSend(data) {
+        //Send data
+        connection.send(data);
+    }
+
+    $(document).ready(function () {
+
+        $('#bt_left').on('click', function() {
+            volumeRotate(-30);
+        });
+
+        $('#bt_right').on('click', function() {
+            volumeRotate(30);
+        });
+    });
+</script>
+
+<style>
+    .mainArea {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .volumeBack {
+        top: 50px;
+        position: relative;
+        background-image: url("./images/volume_bg.png");
+        width: 300px;
+        height: 300px;
+    }
+
+    .volumeMainImage {
+        /* position: absolute; */
+        z-index: 0;
+        position: absolute;
+        top: 38px;
+        left: 60px;
+        /* transform: rotate(60deg); */
+        /* filter: drop-shadow(0 3px 5px rgb(46, 46, 46)); */
+        /* box-shadow: -20px -10px 50px 5px rgba(0, 0, 0, .5) inset; */
+    }
+
+    .filter {
+        z-index: 1;
+        mix-blend-mode: overlay;
+    }
+
+    .animation {
+        animation: rotate-anime 0.5s linear forwards;
+    }
+
+    @keyframes rotate-anime {
+        0% {
+            transform: rotate(0);
+        }
+
+        100% {
+            transform: rotate(0);
+        }
+    }
+
+    @keyframes rotate-anime30 {
+        0% {
+            transform: rotate(0);
+        }
+
+        100% {
+            transform: rotate(30);
+        }
+    }
+
+    @keyframes rotate-anime60 {
+        0% {
+            transform: rotate(30);
+        }
+
+        100% {
+            transform: rotate(60);
+        }
+    }
+
+    @keyframes rotate-anime90 {
+        0% {
+            transform: rotate(60);
+        }
+
+        100% {
+            transform: rotate(90);
+        }
+    }
+
+    @keyframes rotate-anime120 {
+        0% {
+            transform: rotate(90);
+        }
+
+        100% {
+            transform: rotate(120);
+        }
+    }
+
+    @keyframes rotate-anime-30 {
+        0% {
+            transform: rotate(0);
+        }
+
+        100% {
+            transform: rotate(-30);
+        }
+    }
+
+    @keyframes rotate-anime-60 {
+        0% {
+            transform: rotate(-30);
+        }
+
+        100% {
+            transform: rotate(-60);
+        }
+    }
+
+    @keyframes rotate-anime-90 {
+        0% {
+            transform: rotate(-60);
+        }
+
+        100% {
+            transform: rotate(-90);
+        }
+    }
+
+    @keyframes rotate-anime-120 {
+        0% {
+            transform: rotate(-90);
+        }
+
+        100% {
+            transform: rotate(-120);
+        }
+    }
+</style>
+
+<body>
+    <div class="mainArea">
+        <div class="volumeBack">
+            <img class="volumeMainImage filter" src="./images/volume_switch_filter.png" />
+            <img id="volumeMainImage" class="volumeMainImage" src="./images/volume_switch.png" />
+        </div>
+    </div>
+    <div>
+        <button id="bt_left">left</button>
+        <button id="bt_right">right</button>
+        </div>
+</body>
+
+</html>

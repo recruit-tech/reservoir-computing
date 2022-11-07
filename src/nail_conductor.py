@@ -73,7 +73,7 @@ class Training():
         print('training',csv_data)
         self.save_data.append(csv_data)
         pulses, labels = self.app.prepare_data(csv_data)
-        self.model.train_online(pulses, labels, self.optimizer) 
+        self.model.train_online(np.array(pulses), np.array(labels).reshape((1,-1)), self.optimizer) 
 
 
 

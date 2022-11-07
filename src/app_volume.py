@@ -294,11 +294,9 @@ class TrainingApp(app_base.TrainingApp):
                 return
 
     def is_on_mark(self, x, y):
-        # return abs(x) >= self.circles_destance or abs(y) >= self.circles_destance
         return y <= -100
 
     def get_label(self):
-        #labels = np.array([float(int(self.label) == 1), float(int(self.label) == 2)]).reshape((1, -1))
         labels = self.label
         return labels
 
@@ -318,7 +316,7 @@ class TrainingApp(app_base.TrainingApp):
     def prepare_data(self, csv_data):
         pulse00, pulse01, label  = self.get_data(csv_data)
         pulses = self.data.get_augmented_data([pulse00,pulse01])
-        labels = [label,]
+        labels = [float(int(label) == 1), float(int(label) == 2)]
         return pulses, labels
 
     def is_alive(self):
@@ -357,7 +355,7 @@ class WsServer():
             self.messageReceived)     # Clientからの受信時
         self.server.run_forever()
 
-
+import threading
 class PredictApp(app_base.PredictApp):
     def __init__(self, parametes):
         super().__init__()
@@ -367,6 +365,13 @@ class PredictApp(app_base.PredictApp):
         HOST = 'localhost'  # IPアドレスopen
         PORT = 9999  # ポートを指定
         self.wsServer = WsServer(HOST, PORT)
+
+        # Start receiving data from client
+        wsThread = threading.Thread(target=self.wsStart)
+        wsThread.setDaemon(True)    # 終了時にハングアップしない
+        wsThread.start()
+        print("Threading Start")
+
         #self.wsServer.runServer()
 
         # Start receiving data from client
@@ -395,6 +400,7 @@ class PredictApp(app_base.PredictApp):
         try:
 
             while loop:
+                #self.now_time = time.time()
                 if self.is_exit == True:
                     # thread.exit_loop()
                     self.is_exit = True
@@ -420,17 +426,11 @@ class PredictApp(app_base.PredictApp):
 
     def prepare_data(self, rawdata):
         pulse00, pulse01  = self.get_data(rawdata)
-        #print(pulse00, pulse01)
-        #print(self.get_label())
         pulses = np.array(self.data.get_augmented_data([pulse00,pulse01]))
-        #pulses = np.array(pulse00 + pulse01)
-        #pulses = np.array([pulse00 , pulse01])
         return pulses
 
     def set_predict_result(self, predicted):
         super().set_predict_result(predicted)
-
-        #print('predicted',predicted)
 
         if len(predicted[-self.parametes.moving_average:-1]) == 0:
             print('P skip02')
@@ -438,14 +438,12 @@ class PredictApp(app_base.PredictApp):
 
         left, right = np.mean(
             predicted[-self.parametes.moving_average:-1], axis=0)
+        self.now_time = time.time()
 
-
-            # 経過時間まで処理をスキップ
+        # 経過時間まで処理をスキップ
         if self.now_time - self.start_time > self.interval:
             max_value = max([left, right])
-            print('max_value',max_value)
             if max_value > 0.5:
-                
                 max_index = [left, right].index(max_value)
                 print(max_value, self.classes[max_index])
                 self.wsServer.sendMsgAllClient(self.classes[max_index])

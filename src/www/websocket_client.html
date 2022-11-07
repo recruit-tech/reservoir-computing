@@ -1,0 +1,23 @@
+<html>
+<head>
+  <script src="http://code.jquery.com/jquery-latest.min.js">
+  </script>
+  <script>
+    $(function(){
+      var ws = new WebSocket("ws://localhost:9999/");
+      var log = "";
+      ws.onmessage = function(message){
+        log = log + "<br>" + message.data;
+        document.getElementById("txt").innerHTML = log;
+      }
+    })
+  </script>
+</head>
+
+<body>
+  message: <br>
+  <div id = "txt"></div>
+</body>
+
+</html>
+

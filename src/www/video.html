@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Smartphone action</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Add the slick-theme.css if you want default styling -->
+    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
+    <!-- Add the slick-theme.css if you want default styling -->
+    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css" />
+</head>
+<script src="https://code.jquery.com/jquery-3.6.1.min.js"
+    integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+<script>
+    var host = 'localhost'
+    var port = '9999'
+    var uri = 'ws://' + host + ':' + port;
+    var centerImageIndex = 0;
+    var swipeLock = false;
+    var imageFileList = [];
+
+    window.onload = function () {
+        createImageList();
+        connection = new WebSocket(uri);
+        connection.onopen = onOpen;
+        connection.onmessage = onMessage;
+    }
+
+    function createImageList() {
+        list = $('#mainSlick').children('li');
+        for (let li of list) {
+            // console.log($(li).children('img'));
+            imgSrc = $(li).children('img').attr('src');
+            imageFileList.push(imgSrc);
+        }
+        console.log(imageFileList);
+    }
+
+    function onOpen(event) {
+        console.log("Connect successful!");
+    }
+
+    function onMessage(event) {
+
+        const modal = $("#js-modal");
+        const overlay = $("#js-overlay");
+        const open = $(".button");
+
+        //Incoming data
+        console.log(event.data);
+        // addRow(event.data);
+        // changeColor(event.data)
+        document.getElementById("predict").value = event.data;
+        // var evt = $.Event('keydown');
+        // evt.code = 'ArrowLeft';
+        // $('body').trigger(evt);
+        // document.dispatchEvent(new KeyboardEvent("keydown", { code: 39 }));
+        // document.dispatchEvent(new KeyboardEvent("keyup", { key: "a" }));
+        // $('.slick').trigger(evt);
+        // actionEvent();
+        // $('.slick01').slick('slickGoTo', 2);
+        switch (event.data) {
+            case 'p_out':
+                modal.fadeOut();
+                overlay.fadeOut();
+                modal.removeClass("open"); // modalクラスにopenクラス付与
+                overlay.removeClass("open"); // overlayクラスにopenクラス付与
+                swipeLock = false;
+                break;
+            case 'p_in':
+                changeCenterImage();
+                modal.fadeIn();
+                overlay.fadeIn();
+                modal.addClass("open"); // modalクラスにclickクラス付与
+                overlay.addClass("open"); // overlayクラスにclickクラス付与
+                swipeLock = true;
+                break;
+            case 's_left':
+                if (!swipeLock)
+                    $('.slick01').slick('slickNext');
+                break;
+            case 's_right':
+                if (!swipeLock)
+                    $('.slick01').slick('slickPrev');
+                break;
+        }
+    }
+
+    function changeCenterImage() {
+        $('#mainImage').attr('src', imageFileList[centerImageIndex]);
+    }
+
+    // function websocketSend(data) {
+    //     //Send data
+    //     connection.send(data);
+    // }
+
+    // function prepareSend() {
+    //     var form = document.forms.form;
+    //     if (form.message.value != "") {
+    //         websocketSend(form.message.value);
+    //     }
+    // }
+
+    $(document).ready(function () {
+
+        const modal = $("#js-modal");
+        const overlay = $("#js-overlay");
+        const open = $(".button");
+
+        open.on('click', function () { //ボタンをクリックしたら
+            modal.fadeIn();
+            overlay.fadeIn();
+            modal.addClass("open"); // modalクラスにclickクラス付与
+            overlay.addClass("open"); // overlayクラスにclickクラス付与
+        });
+        overlay.on('click', function () { //ボタンをクリックしたら
+            modal.fadeOut();
+            overlay.fadeOut();
+            modal.removeClass("open"); // modalクラスにopenクラス付与
+            overlay.removeClass("open"); // overlayクラスにopenクラス付与
+        });
+        modal.on('click', function () { //ボタンをクリックしたら
+            modal.fadeOut();
+            overlay.fadeOut();
+            modal.removeClass("open"); // modalクラスにopenクラス付与
+            overlay.removeClass("open"); // overlayクラスにopenクラス付与
+        });
+
+        $('.slick01').slick({
+            centerMode: true,
+            centerPadding: '20%',
+            slidesToShow: 1,
+            adaptiveHeight: true,
+            focusOnSelect: true,
+            // variableWidth: true,
+            // responsive: [
+            //     {
+            //         breakpoint: 768,
+            //         settings: {
+            //             arrows: false,
+            //             centerMode: true,
+            //             centerPadding: '30px',
+            //             slidesToShow: 3
+            //         }
+            //     },
+            //     {
+            //         breakpoint: 480,
+            //         settings: {
+            //             arrows: false,
+            //             centerMode: true,
+            //             centerPadding: '30px',
+            //             slidesToShow: 1
+            //         }
+            //     }
+            // ]
+        });
+
+        $('.slick01').on('afterChange', function (slick, currentSlide) {
+            //   $('.message').text((currentSlide['currentSlide'] + 1) + '枚目表示中');
+            centerImageIndex = currentSlide['currentSlide'];
+            // console.log((centerImageIndex + 1) + '枚目表示中');
+        });
+
+        // $('.button').on('click', function () {
+        //     $('.slick01').slick('slickGoTo', 2);
+        // });
+
+        // $('.js-modal-open').on('click', function () {
+        //     $('.js-modal').fadeIn();
+        //     return false;
+        // });
+
+        // $('.js-modal-close').on('click', function () {
+        //     $('.js-modal').fadeOut();
+        //     return false;
+        // });
+    });
+</script>
+
+<style>
+    #sendButton {
+        margin: 10px;
+        background-color: gray;
+        color: white;
+        height: 20px;
+        width: 100px;
+    }
+
+    .table {
+        height: 50px;
+        width: 300px;
+    }
+
+    .slick01 img {
+        width: 100%;
+        height: 30vw;
+        object-fit: cover;
+    }
+
+    .overlay {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        background: black;
+        opacity: .6;
+        display: none;
+        /** 追記 **/
+        z-index: 99;
+        top: 0;
+        left: 0;
+        right: 0;
+    }
+
+    .modal {
+        width: 70%;
+        /* height: 80%; */
+        /* border: 1px solid #000; */
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        /* background: #fff; */
+        display: none;
+        z-index: 100;
+    }
+
+    .modal img {
+        width: 100%;
+    }
+
+    .overlay.open {
+        display: block;
+    }
+
+    .modal.open {
+        display: block;
+    }
+
+    .slick-slide {
+        transition: .3s ease;
+    }
+
+    .slick-slide:not(.slick-current) {
+        opacity: .6;
+    }
+
+    .debug {
+        display: none;
+    }
+</style>
+
+<body>
+    <div class="overlay" id="js-overlay"></div>
+    <div class="modal" id="js-modal">
+        <!-- <div class="modal-close__wrap"> -->
+        <!-- <button class="modal-close" id="js-close">
+                <span>close</span>
+            </button> -->
+        <!-- <img alt="Lilly" src="images/pic_001.png" /> -->
+        <!-- </div> -->
+        <div>
+            <img id="mainImage" alt="Main" src="images/pic_001.png" />
+        </div>
+    </div>
+    <ul id="mainSlick" class="slick01">
+        <li><img alt="Lily" src="images/pic_001.png" /></li>
+        <li><img alt="Mirai" src="images/pic_002.png" /></li>
+        <li><img alt="Kinetic" src="images/pic_003.png" /></li>
+        <li><img alt="genn.ai" src="images/pic_004.png" /></li>
+        <li><img alt="twitter" src="images/pic_005.png" /></li>
+    </ul>
+    <div class="debug">
+        <form name='form'>
+            <input id="predict" type="text" name="message">
+        </form>
+        <!-- <div id="sendButton" onclick="prepareSend()">SEND</div>
+        <div id="table"></div> -->
+        <input type="button" class="button" value="test" />
+    </div>
+</body>
+
+</html>
