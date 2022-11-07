@@ -325,9 +325,14 @@ def run(*_args):
 
     main(params.target_data, params)
 
-import app_thumbup
-import app_volume
-import app_famicom
+# .env ファイルをロードして環境変数へ反映
+from dotenv import load_dotenv
+load_dotenv()
+
+# 環境変数を参照
+import os
+APP_NAME = os.getenv('APPLICATION_NAME')
+exec("import {}".format(APP_NAME) )
 
 if __name__ == '__main__':
     params = parser.parse_args()
@@ -344,10 +349,7 @@ if __name__ == '__main__':
     out_model_filename = os.path.join(save_dir, 'model_' + now.strftime('%Y%m%d_%H%M%S') + '.pkl')
 
     # Set application class
-    #app = app_famicom
-    #app = app_balloon
-    app = app_thumbup
-    #app = app_volume
+    exec("app = {}".format(APP_NAME) )
 
     try:
         main(app)

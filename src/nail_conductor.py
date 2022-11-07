@@ -143,13 +143,17 @@ def main(ds, app):
     predict_app = app.PredictApp(parametes)
     Predict(ds, model, predict_app)
 
+# .env ファイルをロードして環境変数へ反映
+from dotenv import load_dotenv
+load_dotenv()
+
+# 環境変数を参照
+import os
+APP_NAME = os.getenv('APPLICATION_NAME')
+exec("import {}".format(APP_NAME) )
 
 
 import data_streamer_serial
-import app_famicom
-import app_thumbup
-import app_balloon
-import app_volume
 
 if __name__=="__main__":
     params = parser.parse_args()
@@ -170,10 +174,8 @@ if __name__=="__main__":
     ds = data_streamer_serial.DataStreamer('COM3')
 
     # Set application class
-    #app = app_famicom
-    #app = app_balloon
-    app = app_thumbup
-    #app = app_volume
+    exec("app = {}".format(APP_NAME) )
+
 
     try:
         main(ds, app)
