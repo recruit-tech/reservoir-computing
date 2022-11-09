@@ -9,6 +9,7 @@ from model import ESN, Tikhonov
 
 import os
 import pickle
+
 # .env ファイルをロードして環境変数へ反映
 from dotenv import load_dotenv
 load_dotenv()
@@ -166,8 +167,8 @@ if __name__=="__main__":
 
     # make csv and model file names
     now = datetime.datetime.now()
-    out_csv_filename = os.path.join(save_dir, 'train_log_' + now.strftime('%Y%m%d_%H%M%S') + '.csv')
-    out_model_filename = os.path.join(save_dir, 'model_' + now.strftime('%Y%m%d_%H%M%S') + '.pkl')
+    out_csv_filename = os.path.join(save_dir, APP_NAME + '_train_log_' + now.strftime('%Y%m%d_%H%M%S') + '.csv')
+    out_model_filename = os.path.join(save_dir, APP_NAME + '_model_' + now.strftime('%Y%m%d_%H%M%S') + '.pkl')
 
     # Set com port as data streamer
     ds = data_streamer_serial.DataStreamer('COM3')
