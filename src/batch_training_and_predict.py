@@ -133,7 +133,6 @@ def get_valid_augmented_data_from_csvdata(app, csv_data):
 
 def main(app):
     # Set hyper parametes and custom parameters for the application
-    parametes = app.Parameters(parser)
     training_app = app.TrainingApp(parametes)
 
     # title is used for csv and model(pkl) name.
