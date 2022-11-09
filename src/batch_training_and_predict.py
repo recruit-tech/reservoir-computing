@@ -253,9 +253,9 @@ def main(app):
     fig = plt.figure(figsize = (40, 12), dpi=240)
     plt.subplots_adjust(hspace = 0.3)
 
-    graph_name = title + '-mva' + str(m_avg) + '-acc'+ str('{:.2f}'.format(accuracy_one*100))  \
+    graph_name = APP_NAME + '_' + title + '-mva' + str(m_avg) + '-acc'+ str('{:.2f}'.format(accuracy_one*100))  \
                                              + 'x'   + str('{:.2f}'.format(accuracy_zero*100)) \
-                                             + '='   + str('{:.2f}'.format(accuracy*100))
+                                             + '_'   + str('{:.2f}'.format(accuracy*100))
     rax = plt.axes([0.9, 0.4, 0.1, 0.3])
     labels = ['labels','predicts','pred. bin','True Positive','True Negative','False Negative','False Positive']
     visibility = [True,True,True,True,True,True,True]
