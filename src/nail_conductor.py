@@ -9,12 +9,26 @@ from model import ESN, Tikhonov
 
 import os
 import pickle
+# .env ファイルをロードして環境変数へ反映
+from dotenv import load_dotenv
+load_dotenv()
+
+# 環境変数を参照
+APP_NAME = os.getenv('APPLICATION_NAME')
+exec("import {}".format(APP_NAME) )
+
+# Set application class
+exec("APP = {}".format(APP_NAME) )
+print('Application',APP)
 
 parser = argparse.ArgumentParser(description='Hyper parameter.')
-
 parser.add_argument('-in_model_filename', dest='in_model_filename', default=None, type=str, help='Input model file (*.pkl). Skip training when model is set.')
 parser.add_argument('-save_dir', dest='save_dir', default='output', type=str, help='Directory for output files')
 
+# Set hyper parametes and custom parameters for the application
+parametes = APP.Parameters(parser)
+params = parser.parse_args()
+print('params',params)
 
 def csv_writer(file_name, data):
     f = open(file_name, 'w', newline='')
@@ -105,10 +119,6 @@ class Predict():
 
 def main(ds, app):
 
-    # Set hyper parametes and custom parameters for the application
-    parametes = app.Parameters(parser)
-
-
     # Create or load the model
     if in_model_filename is None:
 
@@ -143,20 +153,9 @@ def main(ds, app):
     predict_app = app.PredictApp(parametes)
     Predict(ds, model, predict_app)
 
-# .env ファイルをロードして環境変数へ反映
-from dotenv import load_dotenv
-load_dotenv()
-
-# 環境変数を参照
-import os
-APP_NAME = os.getenv('APPLICATION_NAME')
-exec("import {}".format(APP_NAME) )
-
-
 import data_streamer_serial
 
 if __name__=="__main__":
-    params = parser.parse_args()
 
     # Set parametes as global variable
     in_model_filename = params.in_model_filename
@@ -173,12 +172,8 @@ if __name__=="__main__":
     # Set com port as data streamer
     ds = data_streamer_serial.DataStreamer('COM3')
 
-    # Set application class
-    exec("app = {}".format(APP_NAME) )
-
-
     try:
-        main(ds, app)
+        main(ds, APP)
     except KeyboardInterrupt:
         print('closeing...')
     ds.kill()

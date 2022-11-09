@@ -3,7 +3,7 @@ from abc import ABCMeta, abstractmethod
 
 class Parameters(metaclass=ABCMeta):
     def __init__(self, parser):
-        params = parser.parse_args()
+        #params = parser.parse_args()
 
         try:
             self.add_hyper_parameters(parser)
