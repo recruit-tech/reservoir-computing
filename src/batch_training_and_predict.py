@@ -12,18 +12,34 @@ import argparse
 from matplotlib.widgets import RadioButtons
 from matplotlib.widgets import CheckButtons
 
-
+from distutils.util import strtobool
 np.random.seed(seed=0)
 
 PARAM_OPT = ["tikhonov", "rls"]
 PARAM_RLS = "rls"
 
+# .env ファイルをロードして環境変数へ反映
+from dotenv import load_dotenv
+load_dotenv()
+
+# 環境変数を参照
+APP_NAME = os.getenv('APPLICATION_NAME')
+exec("import {}".format(APP_NAME) )
+
+# Set application class
+exec("APP = {}".format(APP_NAME) )
+print('Application',APP)
+
 parser = argparse.ArgumentParser(description='Hyper parameter.')
 parser.add_argument('-csv_file', dest='csv_file', type=str, help='target data', required=True)
 parser.add_argument('-save_dir', dest='save_dir', default='output', type=str, help='Directory for output files')
-parser.add_argument('-is_save_chart', dest='is_save_chart', default=True, type=bool, help='Save a chart if True')
-parser.add_argument('-is_show_chart', dest='is_show_chart', default=True, type=bool, help='Show a chart if True')
+parser.add_argument('-is_save_chart', dest='is_save_chart', default=True, type=strtobool, help='Save a chart if True')
+parser.add_argument('-is_show_chart', dest='is_show_chart', default=True, type=strtobool, help='Show a chart if True')
 
+# Set hyper parametes and custom parameters for the application
+parametes = APP.Parameters(parser)
+params = parser.parse_args()
+print('params',params)
 
 
 def save_object(file_name, data):
@@ -314,29 +330,7 @@ def main(app):
     plt.clf()
     plt.close()
 
-
-def run(*_args):
-    print('_args',_args)
-    params = parser.parse_args(_args)
-
-    if not os.path.exists(params.save_dir):
-        # ディレクトリが存在しない場合、ディレクトリを作成する
-        os.makedirs(params.save_dir)
-
-    main(params.target_data, params)
-
-# .env ファイルをロードして環境変数へ反映
-from dotenv import load_dotenv
-load_dotenv()
-
-# 環境変数を参照
-import os
-APP_NAME = os.getenv('APPLICATION_NAME')
-exec("import {}".format(APP_NAME) )
-
 if __name__ == '__main__':
-    params = parser.parse_args()
-
     # Set parametes as global variable
     csv_file = params.csv_file
     save_dir = params.save_dir
@@ -348,11 +342,8 @@ if __name__ == '__main__':
     now = datetime.datetime.now()
     out_model_filename = os.path.join(save_dir, 'model_' + now.strftime('%Y%m%d_%H%M%S') + '.pkl')
 
-    # Set application class
-    exec("app = {}".format(APP_NAME) )
-
     try:
-        main(app)
+        main(APP)
     except KeyboardInterrupt:
         print('closeing...')
     exit()
