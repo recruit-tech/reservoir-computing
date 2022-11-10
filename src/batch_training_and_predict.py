@@ -74,27 +74,6 @@ def moving_average(x, w):
 
     return np.array(data).T
 
-def get_title_from_params(parameters):
-
-    members = [attr for attr in vars(parameters).items()]
-
-    title = []
-    used_words = []
-    for member in members:
-        name = member[0]
-        value = member[1]
-
-        param_name = ''
-        for c in name:
-            param_name += c
-            if param_name not in used_words:
-                break
-
-        used_words.append(param_name)
-
-        title.append( param_name + str(value) )
-
-    return "-".join(title)
 
 def get_valid_augmented_data_from_csvdata(app, csv_data):
     data = []
@@ -106,16 +85,14 @@ def get_valid_augmented_data_from_csvdata(app, csv_data):
     return data
 
 
-def main(app, csv_file, save_dir, is_save_chart=True, is_show_chart=False, is_save_model=False):
+def main(app, app_name, parameters, csv_file, save_dir, is_save_chart=True, is_show_chart=False, is_save_model=False):
 
-
-    parameters = app.Parameters(parser)
 
     # Set hyper parameters and custom parameters for the application
     training_app = app.TrainingApp(parameters)
 
     # title is used for csv and model(pkl) name.
-    title = get_title_from_params(parameters)
+    title = parameters.get_title_from_params()
 
     # 出力のスケーリング関数
     output_func = ScalingShift([1.0], [1.0])
@@ -168,7 +145,7 @@ def main(app, csv_file, save_dir, is_save_chart=True, is_show_chart=False, is_sa
     # 学習（リッジ回帰）
     now = datetime.datetime.now()
     train_Y = model.train(train_U, train_D, optimizer) 
-    print('traing time:', datetime.datetime.now() - now)
+    print('training time:', datetime.datetime.now() - now)
 
 
     # 訓練データに対するモデル出力
@@ -231,7 +208,7 @@ def main(app, csv_file, save_dir, is_save_chart=True, is_show_chart=False, is_sa
     fig = plt.figure(figsize = (40, 12), dpi=240)
     plt.subplots_adjust(hspace = 0.3)
 
-    file_name = APP_NAME + '_' + os.path.splitext(os.path.basename(csv_file))[0] + '_' + title + '-mva' + str(m_avg) + '-acc'+ str('{:.2f}'.format(accuracy_one*100))  \
+    file_name = app_name + '_' + os.path.splitext(os.path.basename(csv_file))[0] + '_' + title + '-mva' + str(m_avg) + '-acc'+ str('{:.2f}'.format(accuracy_one*100))  \
                                              + 'x'   + str('{:.2f}'.format(accuracy_zero*100)) \
                                              + '_'   + str('{:.2f}'.format(accuracy*100))
     rax = plt.axes([0.9, 0.4, 0.1, 0.3])
@@ -298,14 +275,14 @@ def main(app, csv_file, save_dir, is_save_chart=True, is_show_chart=False, is_sa
 
     graph_name = os.path.join(save_dir, file_name + '.png')
 
-    if params.is_save_chart:
+    if is_save_chart:
         plt.savefig(graph_name)
 
     if is_save_model:
         model_name = os.path.join(save_dir, file_name + '.pkl')
         save_object(model_name ,model)
 
-    if params.is_show_chart:
+    if is_show_chart:
         plt.show()
 
     plt.clf()
@@ -350,7 +327,7 @@ if __name__ == '__main__':
     #out_model_filename = os.path.join(save_dir, APP_NAME + '_model_' + now.strftime('%Y%m%d_%H%M%S') + '.pkl')
 
     try:
-        acc = main(APP, params.csv_file, params.save_dir, params.is_save_chart, params.is_show_chart, params.is_save_model)
+        acc = main(APP, APP_NAME, parameters, params.csv_file, params.save_dir, params.is_save_chart, params.is_show_chart, params.is_save_model)
     except KeyboardInterrupt:
         print('closing')
 

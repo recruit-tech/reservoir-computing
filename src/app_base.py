@@ -25,6 +25,29 @@ class Parameters(metaclass=ABCMeta):
     def set_parameters(self, params):
         pass
 
+    def get_title_from_params(self):
+
+        members = [attr for attr in vars(self).items() ]
+
+        title = []
+        used_words = []
+        for member in members:
+            name = member[0]
+            value = member[1]
+
+            param_name = ''
+            for c in name:
+                param_name += c
+                if param_name not in used_words:
+                    break
+
+            used_words.append(param_name)
+
+            title.append( param_name + str(value) )
+
+        return "-".join(title)
+
+
 
 class TrainingApp(metaclass=ABCMeta):
     def __init__(self):
