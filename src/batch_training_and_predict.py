@@ -15,31 +15,6 @@ from matplotlib.widgets import CheckButtons
 from distutils.util import strtobool
 np.random.seed(seed=0)
 
-PARAM_OPT = ["tikhonov", "rls"]
-PARAM_RLS = "rls"
-
-# .env ファイルをロードして環境変数へ反映
-from dotenv import load_dotenv
-load_dotenv()
-
-# 環境変数を参照
-APP_NAME = os.getenv('APPLICATION_NAME')
-exec("import {}".format(APP_NAME) )
-
-# Set application class
-exec("APP = {}".format(APP_NAME) )
-print('Application',APP)
-
-parser = argparse.ArgumentParser(description='Hyper parameter.')
-parser.add_argument('-csv_file', dest='csv_file', type=str, help='target data', required=True)
-parser.add_argument('-save_dir', dest='save_dir', default='output', type=str, help='Directory for output files')
-parser.add_argument('-is_save_chart', dest='is_save_chart', default=True, type=strtobool, help='Save a chart if True')
-parser.add_argument('-is_show_chart', dest='is_show_chart', default=True, type=strtobool, help='Show a chart if True')
-
-# Set hyper parametes and custom parameters for the application
-parametes = APP.Parameters(parser)
-params = parser.parse_args()
-print('params',params)
 
 
 def save_object(file_name, data):
@@ -99,9 +74,9 @@ def moving_average(x, w):
 
     return np.array(data).T
 
-def get_title_from_params(parametes):
+def get_title_from_params(parameters):
 
-    members = [attr for attr in vars(parametes).items()]
+    members = [attr for attr in vars(parameters).items()]
 
     title = []
     used_words = []
@@ -131,30 +106,34 @@ def get_valid_augmented_data_from_csvdata(app, csv_data):
     return data
 
 
-def main(app):
-    # Set hyper parametes and custom parameters for the application
-    training_app = app.TrainingApp(parametes)
+def main(app, csv_file, save_dir, is_save_chart=True, is_show_chart=False, is_save_model=False):
+
+
+    parameters = app.Parameters(parser)
+
+    # Set hyper parameters and custom parameters for the application
+    training_app = app.TrainingApp(parameters)
 
     # title is used for csv and model(pkl) name.
-    title = get_title_from_params(parametes)
+    title = get_title_from_params(parameters)
 
     # 出力のスケーリング関数
     output_func = ScalingShift([1.0], [1.0])
 
     # Create model with the hyper parameters
-    model = ESN(parametes.num_of_augmented_data, 
-                parametes.num_of_output_classes, 
-                parametes.node, 
-                density=parametes.density,
-                input_scale=parametes.input_scale,
-                rho=parametes.rho,
-                fb_scale=parametes.fb_scale,
-                leaking_rate=parametes.leaking_rate,
-                classification = parametes.no_class, 
-                average_window=parametes.average_window)
+    model = ESN(parameters.num_of_augmented_data, 
+                parameters.num_of_output_classes, 
+                parameters.node, 
+                density=parameters.density,
+                input_scale=parameters.input_scale,
+                rho=parameters.rho,
+                fb_scale=parameters.fb_scale,
+                leaking_rate=parameters.leaking_rate,
+                classification = parameters.no_class, 
+                average_window=parameters.average_window)
 
 
-    optimizer = Tikhonov(parametes.node, parametes.num_of_output_classes, 0.1)
+    optimizer = Tikhonov(parameters.node, parameters.num_of_output_classes, 0.1)
 
     # Read csv file 
     csv_data = read_csv_data(csv_file)
@@ -171,18 +150,18 @@ def main(app):
     n_wave_test = 1 - n_wave_train
 
     # Get num of output data
-    gt_dim = len(data[0]) - parametes.num_of_augmented_data
+    gt_dim = len(data[0]) - parameters.num_of_augmented_data
 
     # u are sensor and augmented data, d are label data.
-    u = data[:, :parametes.num_of_augmented_data]
-    d = data[:, parametes.num_of_augmented_data:].reshape(-1, gt_dim)
+    u = data[:, :parameters.num_of_augmented_data]
+    d = data[:, parameters.num_of_augmented_data:].reshape(-1, gt_dim)
     T = int(len(d) * n_wave_train)
 
     # 訓練・検証用情報
-    train_U = u[:T].reshape(-1, parametes.num_of_augmented_data)
+    train_U = u[:T].reshape(-1, parameters.num_of_augmented_data)
     train_D = d[:T]
 
-    test_U = u[T:].reshape(-1, parametes.num_of_augmented_data)
+    test_U = u[T:].reshape(-1, parameters.num_of_augmented_data)
     test_D = d[T:]
 
 
@@ -191,7 +170,6 @@ def main(app):
     train_Y = model.train(train_U, train_D, optimizer) 
     print('traing time:', datetime.datetime.now() - now)
 
-    save_object('model.pkl',model)
 
     # 訓練データに対するモデル出力
     test_Y = model.predict(test_U)
@@ -253,7 +231,7 @@ def main(app):
     fig = plt.figure(figsize = (40, 12), dpi=240)
     plt.subplots_adjust(hspace = 0.3)
 
-    graph_name = APP_NAME + '_' + title + '-mva' + str(m_avg) + '-acc'+ str('{:.2f}'.format(accuracy_one*100))  \
+    file_name = APP_NAME + '_' + os.path.splitext(os.path.basename(csv_file))[0] + '_' + title + '-mva' + str(m_avg) + '-acc'+ str('{:.2f}'.format(accuracy_one*100))  \
                                              + 'x'   + str('{:.2f}'.format(accuracy_zero*100)) \
                                              + '_'   + str('{:.2f}'.format(accuracy*100))
     rax = plt.axes([0.9, 0.4, 0.1, 0.3])
@@ -268,15 +246,15 @@ def main(app):
     check.on_clicked(func)
 
     # The title includes parameters of training
-    plt.suptitle(graph_name, fontsize=9)
+    plt.suptitle(file_name, fontsize=9)
 
     # Chart for input data without aurgmened data
-    for i in range(parametes.num_of_input_data):
-        ax = fig.add_subplot(parametes.num_of_input_data + gt_dim, 1, i + 1)
+    for i in range(parameters.num_of_input_data):
+        ax = fig.add_subplot(parameters.num_of_input_data + gt_dim, 1, i + 1)
         if i == 0:
             ax.text(0.2, 1.05, 'Training', transform=ax.transAxes)
             ax.text(0.7, 1.05, 'Testing', transform=ax.transAxes)
-        ax.plot(t_axis, disp_U[:, i*int(parametes.num_of_augmented_data/parametes.num_of_input_data)], color='blue')
+        ax.plot(t_axis, disp_U[:, i*int(parameters.num_of_augmented_data/parameters.num_of_input_data)], color='blue')
         plt.ylabel('input #'+ str(i))
         plt.axvline(x=0, ymin=0, ymax=1, color='gray', linestyle=':')
 
@@ -284,7 +262,7 @@ def main(app):
     # Chart for output data which means classes
     lines=[]
     for i in range(gt_dim):
-        ax = fig.add_subplot(parametes.num_of_input_data + gt_dim, 1, parametes.num_of_input_data + i + 1)
+        ax = fig.add_subplot(parameters.num_of_input_data + gt_dim, 1, parameters.num_of_input_data + i + 1)
 
         #  Square waves of labels
         l0 = ax.plot(t_axis, disp_D[:,i], color='gray', linestyle='-', label='labels', linewidth=1)
@@ -318,10 +296,14 @@ def main(app):
 
         lines.append((l0,l1,l2,l3,l4,l5,l6))
 
-    save_name = os.path.join(params.save_dir, graph_name + '.png')
+    graph_name = os.path.join(save_dir, file_name + '.png')
 
     if params.is_save_chart:
-        plt.savefig(save_name)
+        plt.savefig(graph_name)
+
+    if is_save_model:
+        model_name = os.path.join(save_dir, file_name + '.pkl')
+        save_object(model_name ,model)
 
     if params.is_show_chart:
         plt.show()
@@ -329,21 +311,48 @@ def main(app):
     plt.clf()
     plt.close()
 
+    return accuracy
+
 if __name__ == '__main__':
-    # Set parametes as global variable
-    csv_file = params.csv_file
-    save_dir = params.save_dir
+    # .env ファイルをロードして環境変数へ反映
+    from dotenv import load_dotenv
+    load_dotenv()
+
+    # 環境変数を参照
+    APP_NAME = os.getenv('APPLICATION_NAME')
+    exec("import {}".format(APP_NAME) )
+
+    # Set application class
+    exec("APP = {}".format(APP_NAME) )
+    print('Application',APP)
+
+    parser = argparse.ArgumentParser(description='Hyper parameter.')
+    parser.add_argument('-csv_file', dest='csv_file', type=str, help='target data', required=True)
+    parser.add_argument('-save_dir', dest='save_dir', default='output', type=str, help='Directory for output files')
+    parser.add_argument('-is_save_chart', dest='is_save_chart', default=True, type=strtobool, help='Save a chart if True')
+    parser.add_argument('-is_show_chart', dest='is_show_chart', default=True, type=strtobool, help='Show a chart if True')
+    parser.add_argument('-is_save_model', dest='is_save_model', default=False, type=strtobool, help='Show a chart if True')
+
+    # Set hyper parameters and custom parameters for the application
+    parameters = APP.Parameters(parser)
+    params = parser.parse_args()
+    print('params',params)
+
+    # Set parameters as global variable
+    #csv_file = params.csv_file
+    #save_dir = params.save_dir
 
     # Make directory if not exist
-    os.makedirs(save_dir, exist_ok=True)
+    os.makedirs(params.save_dir, exist_ok=True)
 
     # make csv and model file names
-    now = datetime.datetime.now()
-    out_model_filename = os.path.join(save_dir, 'model_' + now.strftime('%Y%m%d_%H%M%S') + '.pkl')
+    #now = datetime.datetime.now()
+    #out_model_filename = os.path.join(save_dir, APP_NAME + '_model_' + now.strftime('%Y%m%d_%H%M%S') + '.pkl')
 
     try:
-        main(APP)
+        acc = main(APP, params.csv_file, params.save_dir, params.is_save_chart, params.is_show_chart, params.is_save_model)
     except KeyboardInterrupt:
-        print('closeing...')
-    exit()
+        print('closing')
 
+    print('acc',acc)
+    exit(0)
