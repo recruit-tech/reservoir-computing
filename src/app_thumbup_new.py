@@ -51,20 +51,20 @@ class Parameters(app_base.Parameters):
 
         if self._idx == 0:
             self._grid_search_params_list = []
-            #for node in [800,900,1000]:
-            #    for density in [0.4,]:
-            #        for input_scale in [0.004,]:
-            #            for rho in [0.9,1.0]:
-            #                for fb_scale in [None,]:
-            #                    for leaking_rate in [0.1,]:
-            #                        for average_window in [1,]:
-            for node in [700,800,900]:
-                for density in [0.1,0.2,0.4,0,8,1.0]:
-                    for input_scale in [0.001,0.002,0.004,0.008,0.016]:
-                        for rho in [0.6,0.7,0.8,0.9,1.0]:
+            for node in [800,900,1000]:
+                for density in [0.4,]:
+                    for input_scale in [0.004,]:
+                        for rho in [1.0,]:
                             for fb_scale in [None,]:
-                                for leaking_rate in [0.05,0.1,0.2,0.4,0.8]:
-                                    for average_window in [1,2,4,8,16]:
+                                for leaking_rate in [0.1,]:
+                                    for average_window in [1,]:
+            #for node in [700,800,900]:
+            #    for density in [0.1,0.2,0.4,0,8,1.0]:
+            #        for input_scale in [0.001,0.002,0.004,0.008,0.016]:
+            #            for rho in [0.6,0.7,0.8,0.9,1.0]:
+            #                for fb_scale in [None,]:
+            #                    for leaking_rate in [0.05,0.1,0.2,0.4,0.8]:
+            #                        for average_window in [1,2,4,8,16]:
                                         self._grid_search_params_list.append([node,density,input_scale,rho,fb_scale,leaking_rate,average_window])
                                         self._num_of_grid_search += 1
 
@@ -80,10 +80,6 @@ class Parameters(app_base.Parameters):
         self._idx += 1
         return True
         
-
-    #def get_grid_search_params_list(self):
-    #    return self._grid_search_params_list[self._idx++]
-
 
     def get_title_from_params(self):
         members = [attr for attr in vars(self).items() if attr[0][0] != '_' ]
@@ -221,6 +217,8 @@ class TrainingApp(app_base.TrainingApp):
 ###############################################################################
 # Predict
 ###############################################################################
+from os import environ
+environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
 import pygame
 import time
 

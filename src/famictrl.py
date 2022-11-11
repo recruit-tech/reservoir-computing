@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 ''' Transfer required libraries '''
+from os import environ
+environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
 import pygame
 import sys
 import random

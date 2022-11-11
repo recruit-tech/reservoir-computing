@@ -211,6 +211,8 @@ class TrainingApp(app_base.TrainingApp):
 ###############################################################################
 # Predict
 ###############################################################################
+from os import environ
+environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
 import pygame
 import time
 

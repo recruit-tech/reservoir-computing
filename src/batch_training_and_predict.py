@@ -301,7 +301,7 @@ if __name__ == '__main__':
 
     # Set application class
     exec("APP = {}".format(APP_NAME) )
-    print('Application',APP)
+    #print('Application',APP)
 
     parser = argparse.ArgumentParser(description='Hyper parameter.')
     parser.add_argument('-csv_file', dest='csv_file', type=str, help='target data', required=True)
@@ -313,7 +313,6 @@ if __name__ == '__main__':
     # Set hyper parameters and custom parameters for the application
     parameters = APP.Parameters(parser)
     params = parser.parse_args()
-    print('params',params)
 
     # Set parameters as global variable
     #csv_file = params.csv_file
