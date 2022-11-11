@@ -39,7 +39,7 @@ def read_csv_data(file_name):
     with open(file_name, 'r',encoding=encoding) as f:
         reader = csv.reader(f)
         data_list = list(reader)
-        print('data_num:', len(data_list))
+        #print('data_num:', len(data_list))
     #print('data_list',data_list)
     data = np.array(data_list, dtype=float)
 
@@ -185,10 +185,10 @@ def main(app, app_name, parameters, csv_file, save_dir, is_save_chart=True, is_s
     else:
         accuracy_zero = np.count_nonzero(eval * test_d_bool_bin_nega) / np.count_nonzero(test_d_bool_bin_nega)
     accuracy = accuracy_one * accuracy_zero
-    print('moving average window size:',m_avg)
-    print('accuracy:',accuracy)
-    print('accuracy_one:',accuracy_one)
-    print('accuracy_zero:',accuracy_zero)
+    #print('moving average window size:',m_avg)
+    #print('accuracy:',accuracy)
+    #print('accuracy_one:',accuracy_one)
+    #print('accuracy_zero:',accuracy_zero)
 
 
     ###
