@@ -9,6 +9,8 @@ import numpy as np
 class Parameters(app_base.Parameters):
     def __init__(self, parser):
         super().__init__(parser)
+        self._idx = 0
+        self._num_of_grid_search = 0
 
     def add_hyper_parameters(self, parser):
         # Hyper parametes for reserver computing 
@@ -42,6 +44,55 @@ class Parameters(app_base.Parameters):
         self.num_of_augmented_data = params.num_of_augmented_data
         self.num_of_output_classes = params.num_of_output_classes
         self.training_time_in_sec = params.training_time_in_sec
+
+    def set_next_grid_search_params(self):
+        if self._idx >= self._num_of_grid_search and self._idx != 0:
+            return False
+
+        if self._idx == 0:
+            self._grid_search_params_list = []
+            for node in [700,800,900]:
+                for density in [0.1,0.2,0.4,0,8,1.0]:
+                    for input_scale in [0.001,0.002,0.004,0.008,0.016]:
+                        for rho in [0.6,0.7,0.8,0.9,1.0]:
+                            for fb_scale in [None,]:
+                                for leaking_rate in [0.05,0.1,0.2,0.4,0.8]:
+                                    for average_window in [1,2,4,8,16]:
+                                        self._grid_search_params_list.append([node,density,input_scale,rho,fb_scale,leaking_rate,average_window])
+                                        self._num_of_grid_search += 1
+
+        params = self._grid_search_params_list[self._idx]
+        self.node = params[0]
+        self.density = params[1]
+        self.input_scale = params[2]
+        self.rho = params[3]
+        self.fb_scale = params[4]
+        self.leaking_rate = params[5]
+        self.average_window = params[6]
+
+        self._idx += 1
+        return True
+
+    def get_title_from_params(self):
+        members = [attr for attr in vars(self).items() if attr[0][0] != '_' ]
+
+        title = []
+        used_words = []
+        for member in members:
+            name = member[0]
+            value = member[1]
+
+            param_name = ''
+            for c in name:
+                param_name += c
+                if param_name not in used_words:
+                    break
+
+            used_words.append(param_name)
+
+            title.append( param_name + str(value) )
+
+        return "-".join(title)
 
 
 
