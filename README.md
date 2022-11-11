@@ -69,7 +69,13 @@ python batch_training_and_predict.py -csv_file output/train_log_20221101_115348.
 
 ### Usage
 
-how to run a sample program for grid search.
+First of all, you need to change application to thumup_new as follows in [.env](https://github.com/recruit-tech/reservoir-computing/blob/master/src/.env)
+
+ ```
+APPLICATION_NAME=app_thumbup_new
+ ```
+
+And then, run a sample program for grid search.
  ```
 cd reservoir-computing/src
 python grid_search.py -csv_file output/thumbup_nc_data.csv
