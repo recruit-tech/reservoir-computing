@@ -190,6 +190,16 @@ def main(app, app_name, parameters, csv_file, save_dir, is_save_chart=True, is_s
     #print('accuracy_one:',accuracy_one)
     #print('accuracy_zero:',accuracy_zero)
 
+    file_name = app_name + '_' + os.path.splitext(os.path.basename(csv_file))[0] + '_' + title + '-mva' + str(m_avg) + '-acc'+ str('{:.2f}'.format(accuracy_one*100))  \
+                                             + 'x'   + str('{:.2f}'.format(accuracy_zero*100)) \
+                                             + '_'   + str('{:.2f}'.format(accuracy*100))
+
+    if is_save_model:
+        model_name = os.path.join(save_dir, file_name + '.pkl')
+        save_object(model_name ,model)
+
+    if is_save_chart != True and is_show_chart != True:
+        return accuracy
 
     ###
 
@@ -208,9 +218,6 @@ def main(app, app_name, parameters, csv_file, save_dir, is_save_chart=True, is_s
     fig = plt.figure(figsize = (40, 12), dpi=240)
     plt.subplots_adjust(hspace = 0.3)
 
-    file_name = app_name + '_' + os.path.splitext(os.path.basename(csv_file))[0] + '_' + title + '-mva' + str(m_avg) + '-acc'+ str('{:.2f}'.format(accuracy_one*100))  \
-                                             + 'x'   + str('{:.2f}'.format(accuracy_zero*100)) \
-                                             + '_'   + str('{:.2f}'.format(accuracy*100))
     rax = plt.axes([0.9, 0.4, 0.1, 0.3])
     labels = ['labels','predicts','pred. bin','True Positive','True Negative','False Negative','False Positive']
     visibility = [True,True,True,True,True,True,True]
@@ -273,14 +280,11 @@ def main(app, app_name, parameters, csv_file, save_dir, is_save_chart=True, is_s
 
         lines.append((l0,l1,l2,l3,l4,l5,l6))
 
-    graph_name = os.path.join(save_dir, file_name + '.png')
 
     if is_save_chart:
+        graph_name = os.path.join(save_dir, file_name + '.png')
         plt.savefig(graph_name)
 
-    if is_save_model:
-        model_name = os.path.join(save_dir, file_name + '.pkl')
-        save_object(model_name ,model)
 
     if is_show_chart:
         plt.show()
@@ -301,7 +305,6 @@ if __name__ == '__main__':
 
     # Set application class
     exec("APP = {}".format(APP_NAME) )
-    #print('Application',APP)
 
     parser = argparse.ArgumentParser(description='Hyper parameter.')
     parser.add_argument('-csv_file', dest='csv_file', type=str, help='target data', required=True)
