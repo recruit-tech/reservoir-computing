@@ -78,7 +78,7 @@ APPLICATION_NAME=app_thumbup_new
 And then, run a sample program for grid search.
  ```
 cd reservoir-computing/src
-python grid_search.py -csv_file output/thumbup_nc_data.csv
+python grid_search.py -csv_file output/thumbup_nc_data.csv -cpu 4
  ```
 
 ### Setting scope of hyper parameters.
