@@ -82,23 +82,14 @@ class Parameters(app_base.Parameters):
         
 
     def get_title_from_params(self):
-        members = [attr for attr in vars(self).items() if attr[0][0] != '_' ]
 
-        title = []
-        used_words = []
-        for member in members:
-            name = member[0]
-            value = member[1]
-
-            param_name = ''
-            for c in name:
-                param_name += c
-                if param_name not in used_words:
-                    break
-
-            used_words.append(param_name)
-
-            title.append( param_name + str(value) )
+        title = ['n' + f'{self.node:04}', \
+                 'd' + str('{:.3f}'.format(self.density)), \
+                 'i' + str('{:.3f}'.format(self.input_scale)), \
+                 'r' + str('{:.3f}'.format(self.rho)), \
+                 'f' + str('{}'.format(self.fb_scale)), \
+                 'l' + str('{:.3f}'.format(self.leaking_rate)), \
+                 'w' + f'{self.average_window:03}' ]
 
         return "-".join(title)
 
