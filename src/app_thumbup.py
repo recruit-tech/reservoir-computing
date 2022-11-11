@@ -51,6 +51,13 @@ class Parameters(app_base.Parameters):
 
         if self._idx == 0:
             self._grid_search_params_list = []
+            #for node in [800,900,1000]:
+            #    for density in [0.4,]:
+            #        for input_scale in [0.004,]:
+            #            for rho in [1.0,]:
+            #                for fb_scale in [None,]:
+            #                    for leaking_rate in [0.1,]:
+            #                        for average_window in [1,]:
             for node in [700,800,900]:
                 for density in [0.1,0.2,0.4,0,8,1.0]:
                     for input_scale in [0.001,0.002,0.004,0.008,0.016]:
@@ -72,25 +79,17 @@ class Parameters(app_base.Parameters):
 
         self._idx += 1
         return True
+        
 
     def get_title_from_params(self):
-        members = [attr for attr in vars(self).items() if attr[0][0] != '_' ]
 
-        title = []
-        used_words = []
-        for member in members:
-            name = member[0]
-            value = member[1]
-
-            param_name = ''
-            for c in name:
-                param_name += c
-                if param_name not in used_words:
-                    break
-
-            used_words.append(param_name)
-
-            title.append( param_name + str(value) )
+        title = ['n' + f'{self.node:04}', \
+                 'd' + str('{:.3f}'.format(self.density)), \
+                 'i' + str('{:.3f}'.format(self.input_scale)), \
+                 'r' + str('{:.3f}'.format(self.rho)), \
+                 'f' + str('{}'.format(self.fb_scale)), \
+                 'l' + str('{:.3f}'.format(self.leaking_rate)), \
+                 'w' + f'{self.average_window:03}' ]
 
         return "-".join(title)
 
