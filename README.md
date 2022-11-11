@@ -64,7 +64,7 @@ python batch_training_and_predict.py -csv_file output/train_log_20221101_115348.
 ***
 
 ## Grid search for finding the best hyper parameters 
-[grid_search.py](https://github.com/recruit-tech/reservoir-computing/blob/master/src/grid_search.py) is program which find the best hyper parameters.
+[grid_search.py](https://github.com/recruit-tech/reservoir-computing/blob/master/src/grid_search.py) is program which finds the best hyper parameters.
 
 
 ### Usage
@@ -73,6 +73,7 @@ how to run a sample program for grid search.
  ```
 cd reservoir-computing/src
 python grid_search.py -csv_file output/thumbup_nc_data.csv
+ ```
 
 ### Setting scope of hyper parameters.
 Please find set_next_grid_search_params() in [app_thumbup_new.py](https://github.com/recruit-tech/reservoir-computing/blob/master/src/app_thumbup_new.py) for reference.
