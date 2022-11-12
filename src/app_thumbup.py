@@ -59,7 +59,7 @@ class Parameters(app_base.Parameters):
             #                    for leaking_rate in [0.1,]:
             #                        for average_window in [1,]:
             for node in [700,800,900]:
-                for density in [0.1,0.2,0.4,0,8,1.0]:
+                for density in [0.1,0.2,0.4,0.8,1.0]:
                     for input_scale in [0.001,0.002,0.004,0.008,0.016]:
                         for rho in [0.6,0.7,0.8,0.9,1.0]:
                             for fb_scale in [None,]:

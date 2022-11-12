@@ -44,7 +44,8 @@ csv_file = params.csv_file
 
 def wraper(parameters):
     acc = batch_training_and_predict.main(APP, APP_NAME, parameters, csv_file, save_dir, is_save_chart=False, is_show_chart=False, is_save_model=False)
-    print(acc, parameters.get_title_from_params())
+
+    print(str('{:.3f}'.format(acc)), parameters.get_title_from_params())
     return acc, parameters.get_title_from_params()
 
 def main(parameters):
