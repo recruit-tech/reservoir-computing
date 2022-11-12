@@ -16,11 +16,11 @@ class Parameters(app_base.Parameters):
     def add_hyper_parameters(self, parser):
         # Hyper parametes for reserver computing 
         parser.add_argument('-node', dest='node', default=800, type=int, help='number of node')
-        parser.add_argument('-density', dest='density', default=0.2, type=float, help='density')
-        parser.add_argument('-input_scale', dest='input_scale', default=0.004, type=float, help='input scale')
-        parser.add_argument('-rho', dest='rho', default=0.999, type=float, help='rho')
+        parser.add_argument('-density', dest='density', default=0.1, type=float, help='density')
+        parser.add_argument('-input_scale', dest='input_scale', default=0.002, type=float, help='input scale')
+        parser.add_argument('-rho', dest='rho', default=1.0, type=float, help='rho')
         parser.add_argument('-fb_scale', dest='fb_scale', default=None, type=float, help='fb scale')
-        parser.add_argument('-leaking_rate', dest='leaking_rate', default=0.1, type=float, help='leaking rate')
+        parser.add_argument('-leaking_rate', dest='leaking_rate', default=0.6, type=float, help='leaking rate')
         parser.add_argument('-average_window', dest='average_window', default=1, type=int, help='average window size')
         parser.add_argument('--no_classification', dest='no_class', action='store_false', help='no class')
 
@@ -58,13 +58,13 @@ class Parameters(app_base.Parameters):
             #                for fb_scale in [None,]:
             #                    for leaking_rate in [0.1,]:
             #                        for average_window in [1,]:
-            for node in [700,800,900]:
-                for density in [0.1,0.2,0.4,0.8,1.0]:
-                    for input_scale in [0.001,0.002,0.004,0.008,0.016]:
-                        for rho in [0.6,0.7,0.8,0.9,1.0]:
+            for node in [900,800,700]:
+                for density in [0.1,0.2,0.4]:
+                    for input_scale in [0.001,0.002,0.004]:
+                        for rho in [0.95,1.0]:
                             for fb_scale in [None,]:
-                                for leaking_rate in [0.05,0.1,0.2,0.4,0.8]:
-                                    for average_window in [1,2,4,8,16]:
+                                for leaking_rate in [0.4,0.6,0.8,1.0]:
+                                    for average_window in [1,2]:
                                         self._grid_search_params_list.append([node,density,input_scale,rho,fb_scale,leaking_rate,average_window])
                                         self._num_of_grid_search += 1
 
