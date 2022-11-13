@@ -51,20 +51,20 @@ class Parameters(app_base.Parameters):
 
         if self._idx == 0:
             self._grid_search_params_list = []
-            for node in [800,900,1000]:
-                for density in [0.4,]:
-                    for input_scale in [0.004,]:
-                        for rho in [0.6,0.7,0.8,0.9,1.0]:
-                            for fb_scale in [None,]:
-                                for leaking_rate in [0.1,]:
-                                    for average_window in [1,]:
-            #for node in [900,800,700]:
-            #    for density in [0.1,0.2,0.4]:
-            #        for input_scale in [0.001,0.002,0.004]:
-            #            for rho in [0.95,1.0]:
+            #for node in [800,900,1000]:
+            #    for density in [0.4,]:
+            #        for input_scale in [0.004,]:
+            #            for rho in [0.6,0.7,0.8,0.9,1.0]:
             #                for fb_scale in [None,]:
-            #                    for leaking_rate in [0.4,0.6,0.8,1.0]:
-            #                        for average_window in [1,2]:
+            #                    for leaking_rate in [0.1,]:
+            #                        for average_window in [1,]:
+            for node in [900,800,700]:
+                for density in [0.1,0.2,0.4]:
+                    for input_scale in [0.001,0.002]:
+                        for rho in [1.30,1.325,1.350,1.375,1.4]:
+                            for fb_scale in [None,]:
+                                for leaking_rate in [0.6,0.8]:
+                                    for average_window in [1,]:
                                         self._grid_search_params_list.append([node,density,input_scale,rho,fb_scale,leaking_rate,average_window])
                                         self._num_of_grid_search += 1
 
