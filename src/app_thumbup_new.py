@@ -291,7 +291,7 @@ class PredictApp(app_base.PredictApp):
         pulse01 = rawdata[1]
         pulse02 = rawdata[2]
         #pulse03 = rawdata[3]
-        buttons = rawdata[4]
+        buttons = rawdata[3]
         return pulse00
 
     def prepare_data(self, rawdata):
