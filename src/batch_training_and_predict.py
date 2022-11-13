@@ -92,7 +92,7 @@ def main(app, app_name, parameters, csv_file, save_dir, is_save_chart=True, is_s
     training_app = app.TrainingApp(parameters)
 
     # title is used for csv and model(pkl) name.
-    title = parameters.get_title_from_params()
+    title, _ = parameters.get_title_from_params()
 
     # 出力のスケーリング関数
     output_func = ScalingShift([1.0], [1.0])

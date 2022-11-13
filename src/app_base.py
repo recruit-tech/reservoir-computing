@@ -29,7 +29,8 @@ class Parameters(metaclass=ABCMeta):
 
         members = [attr for attr in vars(self).items() ]
 
-        title = []
+        param_str = []
+        param_dict = {}
         used_words = []
         for member in members:
             name = member[0]
@@ -42,10 +43,11 @@ class Parameters(metaclass=ABCMeta):
                     break
 
             used_words.append(param_name)
+            param_dict.update({param_name : value})
 
-            title.append( param_name + str(value) )
+            param_str.append( param_name + str(value) )
 
-        return "-".join(title)
+        return "-".join(param_str), param_dict
 
 
 

@@ -5,12 +5,12 @@ import argparse
 import copy
 
 import batch_training_and_predict
+import csv
 
 import time
 from multiprocessing import Pool
 
 from tqdm import tqdm
-
 
 #global APP
 # .env ファイルをロードして環境変数へ反映
@@ -42,13 +42,30 @@ os.makedirs(save_dir, exist_ok=True)
 n_cpu = params.cpu
 csv_file = params.csv_file
 
+def write_result_csv(out_filename, results_data):
+    labels = list(results_data[0].keys())
+
+    try:
+        with open(out_filename, 'w') as f:
+            writer = csv.DictWriter(f, fieldnames=labels)
+            writer.writeheader()
+            for elem in results_data:
+                writer.writerow(elem)
+    except IOError:
+        print("I/O error")
+
+
+
 def wraper(parameters):
     acc = batch_training_and_predict.main(APP, APP_NAME, parameters, csv_file, save_dir, is_save_chart=False, is_show_chart=False, is_save_model=False)
 
-    print(str('{:.4f}'.format(acc)), parameters.get_title_from_params())
-    return acc, parameters.get_title_from_params()
+    params_str, params_dict = parameters.get_title_from_params()
+    print(str('{:.4f}'.format(acc)), params_str)
+    return acc, params_str, params_dict
 
 def main(parameters):
+    p = Pool(n_cpu)
+
     parameters_list = []
     print('Preparing a gird search. Please wait... ')
     with tqdm() as pbar:
@@ -56,10 +73,22 @@ def main(parameters):
             parameters_list.append(copy.deepcopy(parameters))
             pbar.update(1)
 
-    p = Pool(n_cpu) 
-    accs = p.map(wraper, parameters_list)
-    for result in sorted(accs, reverse=True):
-        print(result)
+    result_data = []
+    results = p.map(wraper, parameters_list)
+    print('Results of grid search for', APP_NAME)
+    for result in sorted(results, reverse=True):
+        acc, params_str, params_dict = result
+        result_dict = {}
+        result_dict.update({'acc':acc})
+        result_dict.update(params_dict)
+        result_data.append(result_dict)
+        print(acc, params_str)
+
+
+    result_csv_filename = os.path.join(save_dir, 'results_grid_search_' + APP_NAME + '.csv')
+    write_result_csv(result_csv_filename, result_data)
+    print('Save result csv to ',result_csv_filename)
+
 
 if __name__ == '__main__':
 

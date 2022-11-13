@@ -83,15 +83,23 @@ class Parameters(app_base.Parameters):
 
     def get_title_from_params(self):
 
-        title = ['n' + f'{self.node:04}', \
-                 'd' + str('{:.3f}'.format(self.density)), \
-                 'i' + str('{:.3f}'.format(self.input_scale)), \
-                 'r' + str('{:.3f}'.format(self.rho)), \
-                 'f' + str('{}'.format(self.fb_scale)), \
-                 'l' + str('{:.3f}'.format(self.leaking_rate)), \
-                 'w' + f'{self.average_window:03}' ]
+        param_str = ['n' + f'{self.node:04}', \
+                     'd' + str('{:.3f}'.format(self.density)), \
+                     'i' + str('{:.3f}'.format(self.input_scale)), \
+                     'r' + str('{:.3f}'.format(self.rho)), \
+                     'f' + str('{}'.format(self.fb_scale)), \
+                     'l' + str('{:.3f}'.format(self.leaking_rate)), \
+                     'w' + f'{self.average_window:03}' ]
 
-        return "-".join(title)
+        param_dict = {'node' : self.node, \
+                      'density' : self.density, \
+                      'input_scale' : self.input_scale, \
+                      'rho' : self.rho, \
+                      'fb_scale' : self.fb_scale, \
+                      'leaking_rate' : self.leaking_rate, \
+                      'average_window' : self.average_window}
+
+        return "-".join(param_str), param_dict
 
 
 
