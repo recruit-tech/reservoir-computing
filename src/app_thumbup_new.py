@@ -26,8 +26,8 @@ class Parameters(app_base.Parameters):
 
 
     def add_custome_perametes(self, parser):
-        parser.add_argument('-num_of_input_data', dest='num_of_input_data', default=1, type=int, help='num of input data (num of sensors)')
-        parser.add_argument('-num_of_augmented_data', dest='num_of_augmented_data', default=1, type=int, help='num of input data (num of sensors)')
+        parser.add_argument('-num_of_input_data', dest='num_of_input_data', default=3, type=int, help='num of input data (num of sensors)')
+        parser.add_argument('-num_of_augmented_data', dest='num_of_augmented_data', default=3, type=int, help='num of input data (num of sensors)')
         parser.add_argument('-num_of_output_classes', dest='num_of_output_classes', default=1, type=int, help='num of output claasses')
         parser.add_argument('-training_time_in_sec', dest='training_time_in_sec', default=60, type=int, help='Training time in sec')
 
@@ -190,11 +190,11 @@ class TrainingApp(app_base.TrainingApp):
         pulse01 = csv_data[1]
         pulse02 = csv_data[2]
         buttons = csv_data[3]
-        return pulse00, buttons
+        return pulse00, pulse01, pulse02, buttons
 
     def prepare_data(self, csv_data):
-        pulse00, label = self.get_data(csv_data)
-        pulses = [float(pulse00),]
+        pulse00, pulse01, pulse02, label = self.get_data(csv_data)
+        pulses = [float(pulse00), float(pulse01),float(pulse02)]
         labels = [float(int(label) == 1), ]
 
         if pygame.get_init() == True:
@@ -288,15 +288,15 @@ class PredictApp(app_base.PredictApp):
     
     def get_data(self, rawdata):
         pulse00 = rawdata[0]
-        #pulse01 = rawdata[1]
-        #pulse02 = rawdata[2]
+        pulse01 = rawdata[1]
+        pulse02 = rawdata[2]
         #pulse03 = rawdata[3]
         buttons = rawdata[4]
         return pulse00
 
     def prepare_data(self, rawdata):
-        pulse00 = self.get_data(rawdata)
-        pulses = [float(pulse00),]
+        pulse00, pulse01, pulse02 = self.get_data(rawdata)
+        pulses = [float(pulse00), float(pulse01), float(pulse02)]
 
         return pulses
 
