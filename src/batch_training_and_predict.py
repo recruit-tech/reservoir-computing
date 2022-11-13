@@ -277,6 +277,7 @@ def main(app, app_name, parameters, csv_file, save_dir, is_save_chart=True, is_s
         ax.axhline(y=0.5, xmin=0, xmax=1, color='k', linestyle='--', linewidth=1)
 
         ax.set_ylabel('class #' + str(i))
+        ax.set_ylim(-0.5 ,1.5)
 
         lines.append((l0,l1,l2,l3,l4,l5,l6))
 
