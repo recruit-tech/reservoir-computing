@@ -118,6 +118,7 @@ class TrainingApp(app_base.TrainingApp):
     def __init__(self, parametes):
         super().__init__()
         self.parametes = parametes
+        self.is_thumb_neutral = True
 
     def start(self):
         pygame.init()
