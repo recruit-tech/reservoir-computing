@@ -15,6 +15,15 @@ Here is a sample code which runs on arduino for 4 sensors and 3 buttons. You can
 
 ### Usage
 
+At first, you need to change the com port according to your environment in [nail_conductor.py](https://github.com/recruit-tech/reservoir-computing/blob/master/src/nail_conductor.py)
+
+ ```
+    # Set com port as data streamer
+    ds = data_streamer_serial.DataStreamer('COM3') # 
+ ```
+
+
+
 how to run a thumup detection with reservoir-computing
  ```
 git clone https://github.com/recruit-tech/reservoir-computing.git
@@ -83,4 +92,17 @@ python grid_search.py -csv_file output/thumbup_nc_data.csv -cpu 4
 
 ### Setting scope of hyper parameters.
 Please find set_next_grid_search_params() in [app_thumbup_new.py](https://github.com/recruit-tech/reservoir-computing/blob/master/src/app_thumbup_new.py) for reference.
-
+All you need is change following code if you'd like to change the range of hyper parameters.
+ ```
+    def set_next_grid_search_params(self):
+                :
+            for node in [800,900,1000]:
+                for density in [0.4,]:
+                    for input_scale in [0.004,]:
+                        for rho in [0.6,0.7,0.8,0.9,1.0]:
+                            for fb_scale in [None,]:
+                                for leaking_rate in [0.1,]:
+                                    for average_window in [1,]:
+                :
+        return True
+ ```
