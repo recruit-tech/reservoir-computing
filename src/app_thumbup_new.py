@@ -16,11 +16,11 @@ class Parameters(app_base.Parameters):
     def add_hyper_parameters(self, parser):
         # Hyper parametes for reserver computing 
         parser.add_argument('-node', dest='node', default=800, type=int, help='number of node')
-        parser.add_argument('-density', dest='density', default=0.1, type=float, help='density')
+        parser.add_argument('-density', dest='density', default=0.4, type=float, help='density')
         parser.add_argument('-input_scale', dest='input_scale', default=0.002, type=float, help='input scale')
-        parser.add_argument('-rho', dest='rho', default=1.0, type=float, help='rho')
+        parser.add_argument('-rho', dest='rho', default=1.4, type=float, help='rho')
         parser.add_argument('-fb_scale', dest='fb_scale', default=None, type=float, help='fb scale')
-        parser.add_argument('-leaking_rate', dest='leaking_rate', default=0.6, type=float, help='leaking rate')
+        parser.add_argument('-leaking_rate', dest='leaking_rate', default=0.8, type=float, help='leaking rate')
         parser.add_argument('-average_window', dest='average_window', default=1, type=int, help='average window size')
         parser.add_argument('--no_classification', dest='no_class', action='store_false', help='no class')
 
