@@ -106,3 +106,11 @@ All you need is change following code if you'd like to change the range of hyper
                 :
         return True
  ```
+
+
+### Visualization the result of relationship between accuracy and hyperparameters with T-SNE.
+
+
+ ```
+python t_sne.py -csv_file output/results_grid_search_app_thumbup_new_2736.csv
+ ```
