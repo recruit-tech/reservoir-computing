@@ -1,68 +1,67 @@
-import numpy as np # linear algebra
-import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
-import matplotlib.pyplot as plt
-import seaborn as sns
+import sklearn.datasets
 from sklearn.manifold import TSNE
-from sklearn.decomposition import PCA
-#%matplotlib inline
-
 from sklearn.datasets import load_digits
+from matplotlib import pylab as plt
+from mpl_toolkits.mplot3d import Axes3D
 import argparse
-
 import pandas as pd
+import numpy as np
+from sklearn.manifold import TSNE
+from matplotlib.colors import Normalize
 
 
+def normalize(v, axis=-1, order=2):
+    l2 = np.linalg.norm(v, ord = order, axis=axis, keepdims=True)
+    l2[l2==0] = 1
+    return v/l2
+
+def min_max(x, axis=None):
+    min = x.min(axis=axis, keepdims=True)
+    max = x.max(axis=axis, keepdims=True)
+    result = (x-min)/(max-min)
+    return result
+
+def zscore(x, axis = None):
+    xmean = x.mean(axis=axis, keepdims=True)
+    xstd  = np.std(x, axis=axis, keepdims=True)
+    zscore = (x-xmean)/xstd
+    return zscore
 
 
 def read_acc_and_params_from_csv(csv_file):
     df = pd.read_csv(csv_file)
     df = df.fillna(0)
 
-
-
     accs = np.array(df['acc'] * 100, dtype='int64')
 
-    params = df[df.columns[df.columns != 'acc']]
+    df = df[df.columns[df.columns != 'acc']]
+    df = df[df.columns[df.columns != 'fb_scale']]
+    params = (df - df.min()) / (df.max() - df.min())
 
     print(accs)
     print(params)
-    return accs, params
+    return accs, params.to_numpy()
 
 
 def main(csv_file):
-    y, X = read_acc_and_params_from_csv(csv_file)
 
-    ## load data
-    #mnist = load_digits()
-    #X = mnist.data
-    #y = mnist.target
+    accuracy, parameters = read_acc_and_params_from_csv(csv_file)
 
-    print('X',X)
-    print('y',y)
-    print('X.shape',X.shape)
-    print('y.shape',y.shape)
+    print(parameters)
+    print(type(parameters))
 
-    ## t-SNE
-    tsne = TSNE(n_components=2, random_state=1)
-    tsne_reduced = tsne.fit_transform(X)
+    norm = Normalize(vmin=0.95*min(accuracy), vmax=1.05*max(accuracy))
 
-    ## PCA
-    pca = PCA(n_components=2, random_state=1)
-    pca_reduced = pca.fit_transform(X)
 
-    ## Visualization
-    plt.figure(figsize = (30,12))
-    plt.subplot(121)
-    plt.scatter(pca_reduced[:,0],pca_reduced[:,1], c = y, 
-                edgecolor = "None", alpha=0.5)
-    plt.colorbar()
-    plt.title('PCA Scatter Plot')
+    parameters3d = TSNE(n_components=3, random_state=1).fit_transform(parameters)
 
-    plt.subplot(122)
-    plt.scatter(tsne_reduced[:,0],tsne_reduced[:,1],  c = y, 
-            cmap = "coolwarm", edgecolor = "None", alpha=0.35)
-    plt.colorbar()
-    plt.title('TSNE Scatter Plot')
+    from mpl_toolkits.mplot3d import Axes3D
+
+    fig = plt.figure(figsize=(10, 10)).gca(projection='3d')
+
+    for i in np.unique(accuracy):
+        target = parameters3d[accuracy == i]
+        fig.scatter(target[:, 0], target[:, 1], target[:, 2], c=accuracy[accuracy == i], norm=norm, cmap='coolwarm')
     plt.show()
 
 if __name__=="__main__":
@@ -71,7 +70,6 @@ if __name__=="__main__":
     parser.add_argument('-csv_file', dest='csv_file', type=str, help='result of grid search', required=True)
 
     params = parser.parse_args()
-
     csv_file = params.csv_file
 
     try:
