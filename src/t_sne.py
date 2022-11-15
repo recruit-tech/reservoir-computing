@@ -59,9 +59,14 @@ def main(csv_file):
 
     fig = plt.figure(figsize=(10, 10)).gca(projection='3d')
 
+    max_acc = np.max(accuracy)
     for i in np.unique(accuracy):
         target = parameters3d[accuracy == i]
-        fig.scatter(target[:, 0], target[:, 1], target[:, 2], c=accuracy[accuracy == i], norm=norm, cmap='coolwarm')
+        if i != max_acc:
+            fig.scatter(target[:, 0], target[:, 1], target[:, 2], c=accuracy[accuracy == i], norm=norm, cmap='jet', marker='.', alpha=0.5)
+        else:
+            fig.scatter(target[:, 0], target[:, 1], target[:, 2], s=100, c='black', marker='^')
+
     plt.show()
 
 if __name__=="__main__":
