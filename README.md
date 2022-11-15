@@ -114,3 +114,7 @@ All you need is change following code if you'd like to change the range of hyper
  ```
 python t_sne.py -csv_file output/results_grid_search_app_thumbup_new_2736.csv
  ```
+
+You will see the following chart.
+
+![T-SNE diagram](imgs/t_sne.png "T-SNE")
