@@ -48,7 +48,10 @@ def read_acc_and_params_from_csv(csv_file):
     df = df[df.columns[df.columns != 'acc']]
     org_params = df[df.columns[df.columns != 'fb_scale']]
     params = (org_params - org_params.min()) / (org_params.max() - org_params.min())
+    params = params.fillna(0)
 
+    #print(org_accs)
+    #print(org_params)
     #print(accs)
     #print(params)
     return accs, params.to_numpy(), org_accs, org_params.to_numpy()
