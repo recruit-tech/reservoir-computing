@@ -10,7 +10,7 @@ from sklearn.manifold import TSNE
 from matplotlib.colors import Normalize
 
 
-def update_annot(ind):
+def update_annot(ind,sc):
     cmap = plt.cm.jet
 
     pos = sc.get_offsets()[ind["ind"][0]]
@@ -28,15 +28,17 @@ def update_annot(ind):
 def hover(event):
     vis = annot.get_visible()
     if event.inaxes == ax:
-        cont, ind = sc.contains(event)
-        if cont:
-            update_annot(ind)
-            annot.set_visible(True)
-            fig.canvas.draw_idle()
-        else:
-            if vis:
-                annot.set_visible(False)
+        for sc in sc_list:
+        
+            cont, ind = sc.contains(event)
+            if cont:
+                update_annot(ind, sc)
+                annot.set_visible(True)
                 fig.canvas.draw_idle()
+            else:
+                if vis:
+                    annot.set_visible(False)
+                    fig.canvas.draw_idle()
 
 def read_acc_and_params_from_csv(csv_file):
     df = pd.read_csv(csv_file)
@@ -79,8 +81,13 @@ if __name__=="__main__":
 
     fig = plt.figure(figsize=(10, 10))
     ax = fig.add_subplot(projection='3d')
-
+    sc_list = []
     sc = ax.scatter(parameters3d[:, 0], parameters3d[:, 1], parameters3d[:, 2], c=accuracy, norm=norm, cmap='jet', marker='.', alpha=0.5)
+    sc_list.append(sc)
+    max_acc = np.max(accuracy)
+    target = parameters3d[accuracy == max_acc]
+    sc = ax.scatter(target[:, 0], target[:, 1], target[:, 2], c='black', s=100, norm=norm, cmap='jet', marker='^', alpha=0.5)
+    sc_list.append(sc)
 
     fig.colorbar(sc, ax=ax, location='left')
 
