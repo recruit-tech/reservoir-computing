@@ -86,8 +86,9 @@ if __name__=="__main__":
     sc_list.append(sc)
     max_acc = np.max(accuracy)
     target = parameters3d[accuracy == max_acc]
-    sc = ax.scatter(target[:, 0], target[:, 1], target[:, 2], c='black', s=100, norm=norm, cmap='jet', marker='^', alpha=0.5)
-    sc_list.append(sc)
+    #sc = ax.scatter(target[:, 0], target[:, 1], target[:, 2], c='black', s=100, norm=norm, cmap='jet', marker='^', alpha=0.5)
+    ax.scatter(target[:, 0], target[:, 1], target[:, 2], c='black', s=100, norm=norm, cmap='jet', marker='^', alpha=0.5)
+    #sc_list.append(sc)
 
     fig.colorbar(sc, ax=ax, location='left')
 
