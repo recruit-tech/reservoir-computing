@@ -118,3 +118,18 @@ python t_sne.py -csv_file output/results_grid_search_app_thumbup_new_2736.csv
 You will see the following chart.
 
 ![T-SNE diagram](imgs/t_sne.png "T-SNE")
+
+
+***
+
+## Arduino
+### arduino code for app_thumbup_new or two nail conductor devices. 
+[nc_3input_with_sw.ino](https://github.com/recruit-tech/reservoir-computing/blob/master/src/arduino/nc_3input_with_sw/nc_3input_with_sw.ino) is a single nail conductor device. Supports button annotation.
+[nc_6input.ino](https://github.com/recruit-tech/reservoir-computing/blob/master/src/arduino/nc_6input/nc_6input.ino) is two nail conductor devices(6 pd inputs) without button.
+
+#### nc_3input_with_sw
+analog pin No. 0, 1, 2 (sensor input)  
+digital pin No. 2 (switch button)
+
+#### nc_6input
+analog pin No. 0, 1, 2, 3, 4, 5 (sensor input)
