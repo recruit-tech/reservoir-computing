@@ -127,9 +127,27 @@ You will see the following chart.
 [nc_3input_with_sw.ino](https://github.com/recruit-tech/reservoir-computing/blob/master/src/arduino/nc_3input_with_sw/nc_3input_with_sw.ino) is a single nail conductor device. Supports button annotation.
 [nc_6input.ino](https://github.com/recruit-tech/reservoir-computing/blob/master/src/arduino/nc_6input/nc_6input.ino) is two nail conductor devices(6 pd inputs) without button.
 
-#### nc_3input_with_sw
+#### nc_3input_with_sw (for app_thumbup_new)
 analog pin No. 0, 1, 2 (sensor input)  
 digital pin No. 2 (switch button）→ No resistor required (this is setting a pullup)
 
-#### nc_6input
+output sample
+```
+:
+120,110,90,0
+115,109,91,0
+170,140,120,1 ← push switch
+:
+```
+
+#### nc_6input (for app_famicom_new, app_smartphone)
 analog pin No. 0, 1, 2, 3, 4, 5 (sensor input)
+
+output sample
+```
+:
+120,110,90,125,108,99
+156,177,132,120,120,112
+161,181,156,120,143,119
+:
+```
