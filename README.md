@@ -129,7 +129,7 @@ You will see the following chart.
 
 #### nc_3input_with_sw
 analog pin No. 0, 1, 2 (sensor input)  
-digital pin No. 2 (switch button)
+digital pin No. 2 (switch button）→ No resistor required (this is setting a pullup)
 
 #### nc_6input
 analog pin No. 0, 1, 2, 3, 4, 5 (sensor input)
