@@ -9,7 +9,6 @@ import numpy as np
 class Parameters(app_base.Parameters):
     def __init__(self, parser):
         super().__init__(parser)
-        #self.set_grid_search_params_list()
         self._idx = 0
         self._num_of_grid_search = 0
 
@@ -52,13 +51,13 @@ class Parameters(app_base.Parameters):
 
         if self._idx == 0:
             self._grid_search_params_list = []
-            for node in [800,900,1000]:
-                for density in [0.4,]:
-                    for input_scale in [0.004,]:
-                        for rho in [0.6,0.7,0.8,0.9,1.0]:
+            for node in [800]:
+                for density in [0.4, 0.6, 0.8]:
+                    for input_scale in [0.005, 0.01, 0.05]:
+                        for rho in [0.4,0.8,0.9,1.0,1.1]:
                             for fb_scale in [None,]:
-                                for leaking_rate in [0.1,]:
-                                    for average_window in [1,]:
+                                for leaking_rate in [0.1, 0.2, 0.4, 0.8]:
+                                    for average_window in [1,5,10,30]:
             #for node in [900,800,700]:
             #    for density in [0.1,0.2,0.4]:
             #        for input_scale in [0.001,0.002]:
@@ -200,7 +199,7 @@ class TrainingApp(app_base.TrainingApp):
         labels = [float(int(label) == 1), ]
 
         if pygame.get_init() == True:
-            if int(label) == 2:
+            if int(label) == 1:
                 if self.is_thumb_neutral == True:
                     pygame.event.post(self.E_THUMB_UP)
                     self.is_thumb_neutral = False
@@ -292,9 +291,7 @@ class PredictApp(app_base.PredictApp):
         pulse00 = rawdata[0]
         pulse01 = rawdata[1]
         pulse02 = rawdata[2]
-        #pulse03 = rawdata[3]
-        buttons = rawdata[3]
-        return pulse00
+        return pulse00, pulse01, pulse02
 
     def prepare_data(self, rawdata):
         pulse00, pulse01, pulse02 = self.get_data(rawdata)
